@@ -110,7 +110,7 @@ BEGIN
 	END IF;
 
 	-- 更新商品包装表价格
-	UPDATE ers_packageattr p INNER JOIN erp_purch_detail pd ON pd.ers_packageAttr_id = p.id
+	UPDATE ers_packageattr p INNER JOIN erp_purch_detail pd ON pd.ers_packageAttr_id = p.id AND p.degree = 1
 	SET p.newSupplierId = aSupplierId, p.newPrice = pd.packagePrice
 		, p.minPrice = IF(IFNULL(p.minPrice,0) = 0, pd.packagePrice, IF(p.minPrice < pd.packagePrice, p.minPrice, pd.packagePrice))
 		, p.maxPrice = IF(IFNULL(p.maxPrice,0) = 0, pd.packagePrice, IF(p.maxPrice > pd.packagePrice, p.maxPrice, pd.packagePrice))
@@ -129,7 +129,7 @@ BEGIN
 	END IF;
 
 	-- 判断是否存在销售单并更改可以出仓标记位(是否全部采购单已进仓)
-	IF EXISTS(SELECT 1 FROM erp_purch_bil pb1 INNER JOIN erp_purch_bil pb2 ON pb2.erp_vendi_bil_id = pb1.erp_vendi_bil_id
+	IF NOT EXISTS(SELECT 1 FROM erp_purch_bil pb1 INNER JOIN erp_purch_bil pb2 ON pb2.erp_vendi_bil_id = pb1.erp_vendi_bil_id
 		WHERE pb1.id = pid AND ISNULL(pb2.inTime) LIMIT 1) THEN
 			IF EXISTS(SELECT 1 FROM erp_vendi_bil v INNER JOIN erp_purch_bil p ON p.erp_vendi_bil_id = v.id WHERE p.id = pid AND v.isSubmit = 0) THEN 
 				-- 修改相应销售单的可以出仓标志isSubmit = 1
