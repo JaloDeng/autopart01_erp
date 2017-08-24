@@ -1,0 +1,42 @@
+SET FOREIGN_KEY_CHECKS =0;
+
+-- TRUNCATE TABLE erp_vendi_back_bilwfw;
+-- TRUNCATE TABLE erp_vendi_back_pick;
+-- TRUNCATE TABLE erp_vendi_back_detail;
+-- TRUNCATE TABLE erp_vendi_back;
+-- 
+-- -- 销售订单1退货
+-- INSERT INTO erp_vendi_back(erp_vendi_bil_id, customerId, lastModifiedId, reason) SELECT 25, 2, 17, '客户退货';
+-- -- 新增销售明细53
+-- INSERT INTO erp_vendi_back_detail(erp_vendi_back_id, erp_sales_detail_id, ers_packageAttr_id, lastModifiedId, packageQty, reason)
+-- SELECT 1, 53, 8, 17, 1, '退货';
+-- -- 修改销售明细53
+-- UPDATE erp_vendi_back_detail a SET a.packageQty = 2 WHERE a.id = 1;
+-- -- 新增销售明细54
+-- INSERT INTO erp_vendi_back_detail(erp_vendi_back_id, erp_sales_detail_id, ers_packageAttr_id, lastModifiedId, packageQty, reason)
+-- SELECT 1, 54, 9, 17, 1, '退货';
+-- -- 删除销售明细54
+-- DELETE a FROM erp_vendi_back_detail a WHERE a.id = 2;
+-- -- 再次新增销售明细54
+-- INSERT INTO erp_vendi_back_detail(erp_vendi_back_id, erp_sales_detail_id, ers_packageAttr_id, lastModifiedId, packageQty, reason)
+-- SELECT 1, 54, 9, 17, 1, '退货';
+-- -- 提货出发
+-- UPDATE erp_vendi_back_pick a SET a.packageQty = 1, a.lastModifiedId = 12, a.pickUserId = 12, a.shipperId = 1 WHERE a.erp_vendi_back_id = 1;
+-- -- 仓库签收
+-- UPDATE erp_vendi_back_pick a SET a.endTime = NOW(), a.lastModifiedId = 12 WHERE a.erp_vendi_back_id = 1;
+-- -- 销售退货进仓38号二维码10号货架
+-- CALL p_call_vendiBack_snCode_shelf('<a>38</a>', 12, 10, 3, 1);
+-- -- 销售退货进仓47、48号二维码9号货架
+-- CALL p_call_vendiBack_snCode_shelf('<a>47</a><a>48</a>', 12, 9, 1, 2);
+-- -- 提交待审
+-- UPDATE erp_vendi_back a SET a.isCheck = 0, a.lastModifiedId = 12 WHERE a.id = 1;
+-- -- 审核不通过
+-- UPDATE erp_vendi_back a SET a.isCheck = -1, a.lastModifiedId = 12, a.memo = '第一次审核不通过' WHERE a.id =1;
+-- -- 再提交待审
+-- UPDATE erp_vendi_back a SET a.isCheck = 0, a.lastModifiedId = 17 WHERE a.id = 1;
+-- -- 审核通过
+-- UPDATE erp_vendi_back a SET a.isCheck = 1, a.lastModifiedId = 12, a.checkUserId = 12 WHERE a.id = 1;
+-- -- 退款确认
+-- UPDATE erp_vendi_back a SET a.costUserId = 12, a.lastModifiedId = 12 WHERE a.id = 1;
+-- -- 退款之后修改
+-- UPDATE erp_vendi_back a SET a.memo = '12123' WHERE a.id = 1;

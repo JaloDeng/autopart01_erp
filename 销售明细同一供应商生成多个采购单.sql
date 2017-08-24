@@ -1,0 +1,61 @@
+-- 原始版本
+-- SELECT DISTINCT a.id, a.erp_inquiry_bil_id, b.amt, b.supplierId, a.checkUserId, now()
+-- 				, a.lastModifiedBy, a.checkEmpId, a.checkEmpName, concat('销售订单审核库存不足自动转入。')
+-- 				, a.needTime, b.erc$telgeo_contact_id, b.takeGeoTel
+-- 				, now(), a.lastModifiedId, a.lastModifiedEmpId, a.lastModifiedEmpName, a.lastModifiedBy
+-- 			FROM erp_vendi_bil a 
+-- 				INNER JOIN erp_sales_detail b ON b.erp_vendi_bil_id = a.id 
+-- 			where a.id = 53 AND b.isEnough = 0
+-- ;
+
+-- SELECT DISTINCT a.id, a.erp_inquiry_bil_id,  b.supplierId, a.checkUserId, now()
+-- 				, a.lastModifiedBy, a.checkEmpId, a.checkEmpName, concat('销售订单审核库存不足自动转入。')
+-- 				, a.needTime, b.erc$telgeo_contact_id, b.takeGeoTel
+-- 				, now(), a.lastModifiedId, a.lastModifiedEmpId, a.lastModifiedEmpName, a.lastModifiedBy
+-- 			FROM erp_vendi_bil a 
+-- 				INNER JOIN erp_sales_detail b ON b.erp_vendi_bil_id = a.id 
+-- 			where a.id = 53 AND b.isEnough = 0
+-- ;
+
+-- 添加条件以supplierId分组
+-- SELECT a.id, a.erp_inquiry_bil_id, sum(b.amt), b.supplierId, a.checkUserId, now()
+-- 				, a.lastModifiedBy, a.checkEmpId, a.checkEmpName, concat('销售订单审核库存不足自动转入。')
+-- 				, a.needTime, b.erc$telgeo_contact_id, b.takeGeoTel
+-- 				, now(), a.lastModifiedId, a.lastModifiedEmpId, a.lastModifiedEmpName, a.lastModifiedBy
+-- 			FROM erp_vendi_bil a 
+-- 				INNER JOIN erp_sales_detail b ON b.erp_vendi_bil_id = a.id 
+-- 			where a.id = 53 AND b.isEnough = 0
+-- 			GROUP BY b.supplierId
+-- ;
+
+-- 明细
+-- select b.id, 53, a.id
+-- 				, a.goodsId, a.ers_packageAttr_id, a.packageUnit, a.packageQty, a.packagePrice
+-- 				, a.qty, a.price, a.amt, now(), now(), now()
+-- 				, b.lastModifiedId, b.lastModifiedEmpId, b.lastModifiedEmpName, b.lastModifiedBy
+-- 			from erp_sales_detail a 
+-- 			INNER JOIN erp_purch_bil b on a.erp_vendi_bil_id = b.erp_vendi_bil_id and a.supplierId = b.supplierId
+-- 			where a.erp_vendi_bil_id = 53 and a.isEnough = 0 
+-- 			;
+
+-- 条件改成已erp_sales_detail.id分组、采购单主表添加销售明细id插入	2017-03-08
+-- SELECT a.id, a.erp_inquiry_bil_id, b.amt, b.supplierId, a.checkUserId, now()
+-- 				, a.lastModifiedBy, a.checkEmpId, a.checkEmpName, concat('销售订单审核库存不足自动转入。'), b.id
+-- 				, a.needTime, b.erc$telgeo_contact_id, b.takeGeoTel
+-- 				, now(), a.lastModifiedId, a.lastModifiedEmpId, a.lastModifiedEmpName, a.lastModifiedBy
+-- 			FROM erp_vendi_bil a 
+-- 				INNER JOIN erp_sales_detail b ON b.erp_vendi_bil_id = a.id 
+-- 			where a.id = aid AND b.isEnough = 0
+-- 			GROUP BY b.id
+-- 			;
+
+-- INNER JOIN条件添加按erp_sales_detail.id分
+-- select b.id, 63 AS aid, a.id AS sid
+-- 				, a.goodsId, a.ers_packageAttr_id, a.packageUnit, a.packageQty, a.packagePrice
+-- 				, a.qty, a.price, a.amt, now(), now(), now()
+-- 				, b.lastModifiedId, b.lastModifiedEmpId, b.lastModifiedEmpName, b.lastModifiedBy
+-- 			from erp_sales_detail a 
+-- 			INNER JOIN erp_purch_bil b on a.erp_vendi_bil_id = b.erp_vendi_bil_id and a.supplierId = b.supplierId 
+-- 			and a.id = 64
+-- 			where a.erp_vendi_bil_id = 63 and a.isEnough = 0 
+-- 			;

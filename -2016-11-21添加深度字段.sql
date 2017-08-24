@@ -1,0 +1,3 @@
+-- 1.表ers$stock_packageattr
+-- ALTER TABLE `ers$stock_packageattr`
+-- ADD COLUMN `degree`  int(11) NULL COMMENT '深度' AFTER `memo`;

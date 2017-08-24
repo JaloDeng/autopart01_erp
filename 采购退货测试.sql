@@ -1,0 +1,38 @@
+SET FOREIGN_KEY_CHECKS =0;
+
+-- TRUNCATE TABLE erp_purch_back_bilwfw;
+-- TRUNCATE TABLE erp_purch_back_detail;
+-- TRUNCATE TABLE erp_purch_back_deliv;
+-- TRUNCATE TABLE erp_purch_back;
+-- 
+-- -- 添加采购退货主表：采购单编号：1
+-- INSERT INTO erp_purch_back(erp_purch_bil_id, lastModifiedId, reason) SELECT 68, 19, '采购退货';
+-- -- 添加采购退货明细：采购明细编号：76
+-- INSERT INTO erp_purch_back_detail(erp_purch_back_id, erp_purch_detail_id, ers_packageAttr_id, packageQty, lastModifiedId, reason)
+-- SELECT 1, 76, 18, 2, 19, '采购明细退货';
+-- -- 修改采购退货明细：采购退货明细编号：1
+-- UPDATE erp_purch_back_detail pbd SET pbd.packageQty = 1 WHERE pbd.id = 1;
+-- -- 添加采购退货明细：采购明细编号：77
+-- INSERT INTO erp_purch_back_detail(erp_purch_back_id, erp_purch_detail_id, ers_packageAttr_id, packageQty, lastModifiedId, reason)
+-- SELECT 1, 77, 19, 5, 19, '采购明细退货';
+-- -- 删除采购退货明细：采购退货明细：2
+-- DELETE a FROM erp_purch_back_detail a WHERE a.id = 2;
+-- -- 再次新增采购退货明细：采购明细编号：77
+-- INSERT INTO erp_purch_back_detail(erp_purch_back_id, erp_purch_detail_id, ers_packageAttr_id, packageQty, lastModifiedId, reason)
+-- SELECT 1, 77, 19, 5, 19, '采购明细退货';
+-- -- 提交待审
+-- UPDATE erp_purch_back a SET a.isCheck = 0, a.lastModifiedId = 19 WHERE a.id = 1;
+-- -- 审核不通过
+-- UPDATE erp_purch_back a SET a.isCheck = -1, a.lastModifiedId = 12, a.memo = '第一次不通过' WHERE a.id = 1;
+-- -- 再次提交待审
+-- UPDATE erp_purch_back a SET a.isCheck = 0, a.lastModifiedId = 19 WHERE a.id = 1;
+-- -- 再次审核不通过
+-- UPDATE erp_purch_back a SET a.isCheck = -1, a.lastModifiedId = 12, a.memo = '第二次不通过' WHERE a.id = 1;
+-- -- 再次提交待审
+-- UPDATE erp_purch_back a SET a.isCheck = 0, a.lastModifiedId = 19 WHERE a.id = 1;
+-- -- 审核通过
+-- UPDATE erp_purch_back a SET a.isCheck = 1, a.lastModifiedId = 12, a.checkUserId = 12 WHERE a.id = 1;
+-- 249、250出仓
+-- CALL p_call_purchBack_snCode_shelf('<a>249</a><a>250</a>', 12, 3, 2);
+-- CALL p_call_purchBack_snCode_shelf('<a>239</a>', 12, 1, 1);
+-- CALL p_call_purchBack_snCode_shelf('<a>251</a><a>252</a><a>253</a>', 12, 3, 3);

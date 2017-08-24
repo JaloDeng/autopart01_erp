@@ -1,0 +1,2171 @@
+-- 销售单bar
+-- DROP VIEW IF EXISTS v_vendiBil_bar;
+-- CREATE VIEW v_vendiBil_bar AS
+-- SELECT
+-- 		a.id
+-- 	,	a.inquiryCode
+-- 	, c.name AS customer
+-- 	, a.priceSumSell
+-- 	, a.priceSumShip
+-- 	, a.isCheck
+-- 	, p.type AS payType
+-- 	, dt.type AS deliveryType
+-- 	,	a.empName
+-- 	,	a.createdDate
+-- 	,	a.costTime
+-- 	,	a.outTime
+-- 	,	a.lastModifiedDate
+-- 	,	a.lastModifiedEmpName
+-- 	,	a.needTime
+-- 	,	a.takeGeoTel
+-- 	,	a.memo
+-- 	, a.customerDemand
+-- 	, a.creatorId
+-- FROM
+-- erp_vendi_bil a 
+-- INNER JOIN autopart01_crm.erc$customer c ON a.customerId = c.id
+-- LEFT JOIN erp_payment_type p ON p.id = a.erp_payment_type_id
+-- LEFT JOIN erp_delivery_type dt ON dt.id = a.erp_delivery_type_id
+-- WHERE a.id NOT IN (SELECT vdb.erp_vendi_bil_id FROM erp_vendi_back vdb WHERE vdb.isCheck > 0)
+-- ;
+-- 
+-- 询价单左下配件搜索
+-- inquiry_vcola_mod
+-- DROP VIEW IF EXISTS v_inquiry_vcola_mod;
+-- CREATE VIEW v_inquiry_vcola_mod AS 
+-- SELECT
+-- a.id AS goodsId,
+-- a.name AS goodsName,
+-- a.exchangeCode,
+-- b.nameAs AS nameAs,
+-- b.vehicleAs AS vehicleAs,
+-- b.code AS partCode,
+-- c.id AS packageAttrId,
+-- c.packageUnit,
+-- c.newSalesPrice AS salesPackagePrice
+-- FROM
+-- autopart01_erp.erp_goods a
+-- INNER JOIN autopart01_modeldb.erv$vhcl_part b ON b.id = a.itemId
+-- LEFT JOIN autopart01_erp.ers_packageattr c ON c.goodsId = a.id
+-- WHERE c.parentId IS NULL
+-- ;
+
+
+-- -- inquiry_vcola_bar_rowab
+-- DROP VIEW IF EXISTS v_inquiry_vcola_bar_rowab;
+-- CREATE VIEW  v_inquiry_vcola_bar_rowab AS 
+-- SELECT
+-- a.id,
+-- a.isSubmit,
+-- a.ischeck,
+-- a.creatorId,
+-- a.priceSumSell,
+-- a.`code`,
+-- a.empName,
+-- a.updateEmpName,
+-- a.createdDate,
+-- a.createdBy,
+-- a.lastModifiedDate,
+-- a.lastModifiedEmpName,
+-- a.lastModifiedBy,
+-- a.memo,
+-- b.`name` AS customerName
+-- FROM
+-- autopart01_erp.erp_inquiry_bil a
+-- INNER JOIN autopart01_crm.erc$customer b ON b.id = a.customerId
+-- ;
+-- 
+-- inquiry_vcola_bar_rowc
+-- DROP VIEW IF EXISTS v_inquiry_vcola_bar_rowc;
+-- CREATE VIEW  v_inquiry_vcola_bar_rowc AS 
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 询价单同部门查看
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		b.userID
+-- 	, c.id
+-- 	, c.isSubmit
+-- 	, c.ischeck
+-- 	, c.priceSumSell
+-- 	, c.code
+-- 	, c.empName
+-- 	, c.updateEmpName
+-- 	, c.createdDate
+-- 	, c.createdBy
+-- 	, c.lastModifiedDate
+-- 	, c.lastModifiedEmpName
+-- 	, c.lastModifiedBy
+-- 	, c.memo
+-- 	, d.name AS customerName 
+-- FROM autopart01_security.sec$user_group AS a 
+-- INNER JOIN autopart01_security.sec$user_group AS b ON a.groupID = b.groupID 
+-- LEFT JOIN erp_inquiry_bil AS c ON c.creatorId = a.userID 
+-- INNER JOIN autopart01_crm.erc$customer AS d ON d.id = c.customerId 
+-- ;
+
+-- inquiryQuoteBill_winform
+-- DROP VIEW IF EXISTS v_inquiry_quote_winForm;
+-- CREATE VIEW v_inquiry_quote_winForm AS 
+-- SELECT
+-- CONCAT(UUID_SHORT(),e.id) AS id,
+-- e.id AS goods_goodsId,
+-- e.name AS goods_name,
+-- e.brand AS goods_brand,
+-- e.exchangeCode,
+-- e.unit,
+-- b.newPrice AS supplier_price,
+-- c.name AS supplier_name,
+-- c.nameAs AS supplier_nameAs,
+-- c.id  AS supplier_id,
+-- c.callnum AS supplier_callnum,
+-- c.addrroad AS supplier_addrroad,
+-- d.id AS packageAttrId,
+-- d.packageUnit,
+-- d.actualQty,
+-- c.onlines1 AS qq
+-- FROM
+-- erp_goods a
+-- LEFT JOIN erp_suppliersgoods b ON b.goodsId = a.id
+-- LEFT JOIN autopart01_crm.erc$supplier c ON c.id = b.crm_suppliers_id
+-- RIGHT JOIN autopart01_erp.ers_packageattr d ON d.id = b.ers_packageAttr_id
+-- RIGHT JOIN autopart01_erp.erp_goods e ON e.id = d.goodsId;
+-- ;
+
+-- DROP VIEW IF EXISTS v_inquiry_quote_bar;
+-- CREATE VIEW v_inquiry_quote_bar AS 
+-- -- ------------------------------------------------------------------------------------------------------------------
+-- -- 报价单bar
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		ib.id
+-- 	, ib.`code`
+-- 	, ib.priceSumCome
+-- 	, ib.priceSumSell
+-- 	, ib.needTime
+-- 	, ib.updaterId
+-- 	, ib.createdBy
+-- 	, ib.empName
+-- 	, ib.updateEmpName
+-- 	, ib.createdDate
+-- 	, ib.lastModifiedDate
+-- 	, c.`name` AS customerName
+-- FROM erp_inquiry_bil ib 
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = ib.customerId
+-- WHERE ib.isSubmit = 1
+-- ;
+
+-- purchaseDetail_mod - 1
+-- DROP VIEW IF EXISTS v_purchaseDetail_mod;
+-- CREATE VIEW v_purchaseDetail_mod AS 
+-- SELECT
+-- CONCAT(UUID_SHORT(),e.id) AS id,
+-- e.id AS goodsId,
+-- e.name AS goodsName,
+-- e.brand AS goodsBrand,
+-- f.code AS itemCode,
+-- e.unit,
+-- b.newPrice AS supplierPrice,
+-- c.id AS supplierId,
+-- c.name AS supplierName,
+-- d.id AS packageAttrId,
+-- d.packageUnit,
+-- d.actualQty
+-- FROM
+-- erp_goods a
+-- LEFT JOIN erp_suppliersgoods b ON b.goodsId = a.id
+-- LEFT JOIN autopart01_crm.erc$supplier c ON c.id = b.crm_suppliers_id
+-- RIGHT JOIN autopart01_erp.ers_packageattr d ON d.id = b.ers_packageAttr_id
+-- RIGHT JOIN autopart01_erp.erp_goods e ON e.id = d.goodsId
+-- LEFT JOIN autopart01_modeldb.erv$vhcl_part f ON f.id = e.itemId
+-- WHERE c.id IS NOT NULL
+-- UNION
+-- SELECT
+-- CONCAT(UUID_SHORT(),a.id) AS id,
+-- a.id AS goodsId,
+-- a.name AS goodsName,
+-- a.brand AS goodsBrand,
+-- c.code AS itemCode,
+-- a.unit,
+-- '' AS supplierPrice,
+-- '' AS supplierId,
+-- '' AS supplierName,
+-- b.id AS packageAttrId,
+-- b.packageUnit,
+-- b.actualQty
+-- FROM
+-- erp_goods a
+-- RIGHT JOIN autopart01_erp.ers_packageattr b ON b.goodsId = a.id
+-- LEFT JOIN autopart01_modeldb.erv$vhcl_part c ON c.id = a.itemId
+-- ;
+
+-- purchaseDetail_mod - 2
+-- DROP VIEW IF EXISTS v_purchaseDetail_mod;
+-- CREATE VIEW v_purchaseDetail_mod AS 
+-- SELECT
+-- 		g.id
+-- 	, g.id AS goodsId
+-- 	, g.partCode
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, g.brand AS goodsBrand
+-- 	, g.origin AS goodsOrigin
+-- 	, g.actualQty
+-- 	, g.unit
+-- 	, g.packageAttrId
+-- 	, g.packageUnit
+-- 	, g.newPrice
+-- 	, g.newSupplierId AS supplierId
+-- 	, s.`name` AS supplierName
+-- FROM v_goods_information g
+-- LEFT JOIN autopart01_crm.`erc$supplier` s ON s.id = g.newSupplierId
+-- ;
+
+-- suppliersgoods
+-- DROP VIEW IF EXISTS v_suppliersgoods;
+-- CREATE VIEW v_suppliersgoods AS 
+-- SELECT 
+-- 	CONCAT(UUID_SHORT(),a.goodsId) AS id
+-- 	, a.crm_suppliers_id AS supplierId
+-- 	, a.goodsId 
+-- 	, a.exchangeCode
+-- 	, b.`name` AS supplierName
+-- FROM erp_suppliersgoods_exchangecode a
+-- INNER JOIN autopart01_crm.`erc$supplier` b ON b.id = a.crm_suppliers_id
+-- ;
+
+-- DROP VIEW IF EXISTS v_all_process_state;
+-- CREATE VIEW v_all_process_state AS
+-- -- -------------------------------------------------------------------------------------------------------------------------------------
+-- -- 同一询价单号相关单据所有流程状态
+-- -- -------------------------------------------------------------------------------------------------------------------------------------
+-- SELECT 
+-- 		a.`code` AS inquiryCode
+-- 	, d.purchCode
+-- 	, a.ischeck AS inquiryCheck
+-- 	, a.isSubmit AS inquirySubmit
+-- 	, b.isCheck AS vendiCheck
+-- 	, CASE WHEN b.outUserId > 0 AND b.isSubmit = 1 THEN 1 WHEN ISNULL(b.outUserId) AND b.isSubmit > -2 THEN 0 ELSE NULL END AS vendiOut
+-- 	, b.isCost AS vendiCost
+-- 	, c.startPoint AS vendiStartPoint
+-- 	, c.endPoint AS vendiEndPoint
+-- 	, c.spendTime AS vendiSpendTime
+-- 	, c.freight AS vendiFreight
+-- 	, c.delivTime
+-- 	, c.endTime AS delivEndTime
+-- 	, d.isCheck AS purchCheck
+-- 	, d.isReceive AS purchReceive
+-- 	, CASE WHEN d.inUserId > 0 AND d.isReceive = 1 THEN 1 WHEN ISNULL(d.inUserId) AND d.isReceive > -1 THEN 0 ELSE NULL END AS purchIn
+-- 	, d.isCost AS purchCost
+-- 	, e.startPoint AS purchStartPoint
+-- 	, e.endPoint AS purchEndPoint
+-- 	, e.spendTime AS purchSpendTime
+-- 	, e.freight AS purchFreight
+-- 	, e.pickTime
+-- 	, e.endTime AS pickEndTime
+-- FROM erp_inquiry_bil a 
+-- LEFT JOIN erp_vendi_bil b ON b.erp_inquiry_bil_id = a.id
+-- LEFT JOIN erp_vendi_deliv c ON c.erp_vendi_bil_id = b.id
+-- LEFT JOIN erp_purch_bil d ON d.erp_inquiry_bil_id = a.id
+-- LEFT JOIN erp_purch_pick e ON e.erp_purch_bil_id = d.id
+-- UNION ALL
+-- SELECT
+-- 		NULL AS inquiryCode
+-- 	, a.purchCode
+-- 	, NULL AS inquiryCheck
+-- 	, NULL AS inquirySubmit
+-- 	, NULL AS vendiCheck
+-- 	, NULL AS vendiOut
+-- 	, NULL AS vendiCost
+-- 	, NULL AS vendiStartPoint
+-- 	, NULL AS vendiEndPoint
+-- 	, NULL AS vendiSpendTime
+-- 	, NULL AS vendiFreight
+-- 	, NULL AS delivTime
+-- 	, NULL AS delivEndTime
+-- 	, a.isCheck AS purchCheck
+-- 	, a.isReceive AS purchReceive
+-- 	, CASE WHEN a.inUserId > 0 THEN 1 ELSE 0 END AS purchIn
+-- 	, a.isCost AS purchCost
+-- 	, b.startPoint AS purchStartPoint
+-- 	, b.endPoint AS purchEndPoint
+-- 	, b.spendTime AS purchSpendTime
+-- 	, b.freight AS purchFreight
+-- 	, b.pickTime
+-- 	, b.endTime AS pickEndTime 
+-- FROM erp_purch_bil a
+-- LEFT JOIN erp_purch_pick b ON b.erp_purch_bil_id = a.id
+-- WHERE ISNULL(a.erp_inquiry_bil_id) AND ISNULL(a.ers_inventory_id)
+-- ;
+
+-- 已备货数量
+-- DROP VIEW IF EXISTS v_sale_detail_stockQty;
+-- CREATE VIEW v_sale_detail_stockQty AS
+-- SELECT 
+-- 		SUM(vs.qty) AS stockQty
+-- 	, vs.erp_sales_detail_id AS sid 
+-- FROM erp_vendi_bil_stockqty vs 
+-- GROUP BY vs.erp_sales_detail_id
+-- ;
+
+-- 出仓单barGrid
+-- DROP VIEW IF EXISTS v_vendi_out;
+-- CREATE VIEW v_vendi_out AS
+-- SELECT
+-- 		sd.id
+-- 	,	v.inquiryCode
+-- 	, v.createdDate
+-- 	,	sd.goodsId
+-- 	,	g.`name` AS goodsName
+-- 	, g.brand AS goodsbrand
+-- 	, g.origin AS goodsorigin
+-- 	, g.partCode AS goodspartCode
+-- 	, g.vehicleAs
+-- 	,	sd.qty AS needQty
+-- 	, IFNULL(SUM(b.qty),0) AS outQty
+-- 	, IFNULL(sds.stockQty,0) AS stockQty
+-- 	,	g.shelfNames
+-- 	,	sd.stockTime
+-- 	, sd.outTime
+-- 	, c.`name` AS customerName
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_vendi_bil v ON v.id = sd.erp_vendi_bil_id
+-- INNER JOIN autopart01_crm.`erc$customer` c ON c.id = v.customerId
+-- INNER JOIN v_goods_information g ON g.id = sd.goodsId
+-- LEFT JOIN erp_vendi_bil_goutqty b ON b.erp_sales_detail_id = sd.id
+-- LEFT JOIN v_sale_detail_stockqty sds ON sds.sid = sd.id
+-- WHERE sd.stockTime > 0 AND ISNULL(sd.outTime)
+-- GROUP BY sd.id
+-- ;
+-- 
+-- 出仓单左下货架库存、备货视图
+-- DROP VIEW IF EXISTS v_vendi_out_shelf;
+-- CREATE VIEW v_vendi_out_shelf AS
+-- SELECT
+-- 		a.id
+-- 	,	a.goodsId
+-- 	,	a.ers_shelfattr_id AS shelfId
+-- 	,	b.title AS shelfName
+-- 	, b.size
+-- 	,	g.partCode
+-- 	, g.vehicleAs
+-- 	,	g.`name` AS goodsName
+-- 	, g.brand
+-- 	, g.origin
+-- 	,	sum(a.qty) AS qty
+-- FROM ers_shelfbook a
+-- INNER JOIN ers_shelfattr b ON b.id = a.ers_shelfattr_id
+-- INNER JOIN v_goods_information g ON g.id = a.goodsId
+-- WHERE a.qty > 0
+-- GROUP BY a.ers_shelfattr_id, a.goodsId
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_vendi_stock_sncode;
+-- CREATE VIEW v_vendi_stock_sncode AS
+-- ---------------------------------------------------------------------------------------------------------------
+-- 备货单右下货架二维码表
+-- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		a.id
+-- 	,	a.goodsId
+-- 	,	a.ers_shelfattr_id AS shelfId
+-- 	,	b.`name` AS goodsName
+-- 	,	1 AS packageQty
+-- 	,	c.packageUnit
+-- 	,	a.qty
+-- 	,	a.state
+-- 	,	a.stockState
+-- 	,	b.partCode AS goodspartCode
+-- 	, b.vehicleAs
+-- 	, s.title AS shelfName
+-- 	, c.spec
+-- 	, c.quality
+-- FROM erp_purchdetail_sncode a
+-- INNER JOIN erp_goods b ON b.id = a.goodsId
+-- INNER JOIN ers_packageattr c ON c.id = a.ers_packageattr_id
+-- INNER JOIN ers_shelfattr s ON s.id = a.ers_shelfattr_id
+-- WHERE a.state = 1 AND a.stockState =0 AND a.ers_shelfbook_id > 0
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_out_sncode;
+-- CREATE VIEW v_vendi_out_sncode AS
+-- ------------------------------------------------------------------------------------------------
+-- 出仓单右下二维码表（已备货单为基础）
+-- ------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		b.id
+-- 	, b.goodsId
+-- 	, c.partCode AS goodspartCode
+-- 	, c.`name` AS goodsName
+-- 	, c.vehicleAs
+-- 	, 1 AS packageQty
+-- 	, d.packageUnit
+-- 	, b.qty
+-- 	, b.state
+-- 	, b.stockState
+-- 	, s.title AS shelfName
+-- 	, a.erp_sales_detail_id AS salesDetailId
+-- 	, d.spec
+-- 	, d.quality
+-- FROM erp_vendi_bil_stockqty a
+-- INNER JOIN erp_purchdetail_sncode b ON b.id = a.erp_purchDetail_snCode_id
+-- INNER JOIN erp_goods c ON c.id = b.goodsId
+-- INNER JOIN ers_packageattr d ON d.id = b.ers_packageattr_id
+-- INNER JOIN ers_shelfattr s ON s.id = b.ers_shelfattr_id
+-- WHERE b.state = 1 AND b.stockState = 1
+-- ;
+
+-- DROP VIEW IF EXISTS v_erp_purch_pick_bar;
+-- CREATE VIEW v_erp_purch_pick_bar AS
+-- -- --------------------------------------------------------------------------------------------------------------------------
+-- -- 采购提货单bar
+-- -- --------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		a.id
+-- 	, a.erp_purch_bil_id as purchBillId
+-- 	, a.spendTime
+-- 	, a.freight
+-- 	, a.startPoint
+-- 	, a.endPoint
+-- 	,	a.inquiryCode
+-- 	,	a.purchCode
+-- 	, c.`name` AS customerName
+-- 	, vb.priceSumSell
+-- 	,	a.shipperName
+-- 	,	a.supplierName
+-- 	,	d.type AS payType
+-- 	, dt.type AS deliveryType
+-- 	,	a.serialNumber
+-- 	,	a.packageQty
+-- 	,	a.pickNo
+-- 	,	a.pickEmpName
+-- 	,	a.takeGeoTel
+-- 	, a.deliveryMemo
+-- 	,	a.memo
+-- 	,	a.pickTime
+-- 	,	a.endTime
+-- 	,	a.opTime
+-- 	,	a.lastModifiedDate
+-- 	, IF(ISNULL(a.endTime),0,1) AS isReceive
+-- FROM erp_purch_pick a 
+-- INNER JOIN erp_purch_bil pb ON pb.id = a.erp_purch_bil_id
+-- LEFT JOIN erp_vendi_bil vb ON vb.id = pb.erp_vendi_bil_id
+-- LEFT JOIN autopart01_crm.`erc$customer` c ON c.id = vb.customerId
+-- LEFT JOIN erp_payment_type d ON d.id = a.erp_payment_type_id
+-- LEFT JOIN erp_delivery_type dt ON dt.id = a.erp_delivery_type_id
+-- ;
+
+-- 采购进仓bar
+-- DROP VIEW IF EXISTS v_purch_in;
+-- CREATE VIEW v_purch_in AS
+-- SELECT
+-- 	 a.id
+-- 	, b.purchCode
+-- 	, b.inquiryCode
+-- 	, b.createdDate
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, g.partCode AS goodspartCode
+-- 	, g.brand AS goodsbrand
+-- 	, g.origin AS goodsorigin
+-- 	, g.shelfNames
+-- 	, a.qty
+-- 	, IFNULL(SUM(pi.qty),0) AS inQty
+-- 	, g.unit
+-- 	, a.isReceive
+-- 	, a.inTime
+-- 	, s.`name` AS supplierName
+-- FROM erp_purch_detail a
+-- INNER JOIN erp_purch_bil b ON b.id = a.erp_purch_bil_id
+-- INNER JOIN autopart01_crm.`erc$supplier` s ON s.id = b.supplierId
+-- INNER JOIN v_goods_information g ON g.id = a.goodsId
+-- LEFT JOIN erp_purch_bil_intoqty pi ON pi.erp_purch_detail_id = a.id
+-- WHERE a.isReceive = 1 AND ISNULL(a.inTime)
+-- GROUP BY a.id
+-- ;
+
+-- 采购进程左下货架
+-- DROP VIEW IF EXISTS v_purch_in_shelf;
+-- CREATE VIEW v_purch_in_shelf AS
+-- SELECT
+-- 	a.id
+-- 	,a.title AS shelfName
+-- 	,a.size
+-- FROM ers_shelfattr a
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_in_sncode;
+-- CREATE VIEW v_purch_in_sncode AS
+-- -- ------------------------------------------------------------------------------------------------------------------
+-- -- 采购进仓二维码
+-- -- ------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pds.id
+-- 	, pds.erp_purch_detail_id AS purchDetailId
+-- 	, g.partCode AS goodspartCode
+-- 	,	g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, 1 AS packageQty
+-- 	, p.packageUnit
+-- 	, pds.qty
+-- 	, pds.state
+-- 	, p.spec
+-- 	, p.quality
+-- FROM erp_purchdetail_sncode pds
+-- INNER JOIN erp_goods g ON g.id = pds.goodsId
+-- INNER JOIN ers_packageattr p ON p.id = pds.ers_packageattr_id
+-- WHERE pds.state = 0
+-- ;
+
+-- 货物二维码更换仓位视图
+-- DROP VIEW IF EXISTS v_goods_change_sncode;
+-- CREATE VIEW v_goods_change_sncode AS
+-- SELECT
+-- 		a.id
+-- 	,	a.goodsId
+-- 	,	a.ers_shelfattr_id AS shelfId
+-- 	,	b.`name` AS goodsName
+--   ,	1 AS packageQty
+-- 	,	c.packageUnit
+-- 	,	a.qty
+-- 	,	a.state
+-- 	,	a.stockState
+-- 	,	b.partCode AS goodspartCode
+-- 	, b.vehicleAs
+-- 	,	b.brand AS goodsbrand
+-- 	,	b.origin AS goodsorigin
+-- 	, s.title AS shelfName
+-- 	, a.ers_shelfbook_id AS unPackState
+-- FROM erp_purchdetail_sncode a
+-- INNER JOIN erp_goods b ON b.id = a.goodsId
+-- INNER JOIN ers_packageattr c ON c.id = a.ers_packageattr_id
+-- INNER JOIN ers_shelfattr s ON s.id = a.ers_shelfattr_id
+-- WHERE a.state = 1 AND a.stockState = 0 AND a.ers_shelfbook_id > 0
+-- ;
+
+-- 备货单bar/winform
+-- DROP VIEW IF EXISTS v_vendi_stock;
+-- CREATE VIEW v_vendi_stock AS
+-- SELECT
+-- 	sd.id
+-- 	, v.inquiryCode
+-- 	, v.createdDate
+-- 	, sd.goodsId
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, g.brand AS goodsbrand
+-- 	, g.origin AS goodsorigin
+-- 	, g.partCode AS goodspartCode
+-- 	, sd.qty AS needQty
+-- 	, IFNULL(SUM(vs.qty),0) AS stockQty
+-- 	, g.shelfNames
+-- 	, sd.stockTime
+-- 	, c.`name` AS customerName
+-- FROM erp_sales_detail sd 
+-- INNER JOIN erp_vendi_bil v ON v.id = sd.erp_vendi_bil_id
+-- INNER JOIN autopart01_crm.`erc$customer` c ON c.id = v.customerId
+-- INNER JOIN v_goods_information g ON g.id = sd.goodsId
+-- LEFT JOIN erp_vendi_bil_stockqty vs ON vs.erp_sales_detail_id = sd.id
+-- WHERE ISNULL(sd.stockTime)
+-- GROUP BY sd.id
+-- ORDER BY sd.id DESC
+-- ;
+
+-- 配件核销单bar
+-- DROP VIEW IF EXISTS v_goods_cancel;
+-- CREATE VIEW v_goods_cancel AS
+-- SELECT
+-- 	a.id
+-- 	, a.`code`
+-- 	, a.isCheck
+-- 	, a.empName
+-- 	, a.createdDate
+-- 	, a.lastModifiedEmpName
+-- 	, a.lastModifiedDate
+-- 	, a.reason
+-- 	, a.memo
+-- FROM erp_goods_cancel a
+-- ;
+
+-- 汇款单
+-- DROP VIEW IF EXISTS v_purchase_cost;
+-- CREATE VIEW v_purchase_cost AS
+-- SELECT
+-- 		a.id
+-- 	,	a.`code`
+-- 	, a.checkEmpName
+-- 	, a.priceSumCome
+-- 	, a.isCost
+-- 	,	a.costEmpName
+-- 	, a.costTime
+-- FROM erp_purch_bil a
+-- WHERE a.isCheck = 1
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_back_in;
+-- CREATE VIEW v_vendi_back_in AS
+-- -- ------------------------------------------------------------------------------------------------------------------
+-- -- 销售退货进仓BarGrid、winform
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vbd.id
+-- 	, vbd.erp_sales_detail_id AS salesDetailId
+-- 	, vb.`code` AS vendiBackCode
+-- 	, vb.inquiryCode
+-- 	, vb.createdDate
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, g.partCode AS goodspartCode
+-- 	, g.brand AS goodsbrand
+-- 	, g.origin AS goodsorigin
+-- 	, g.shelfNames
+-- 	, vbd.qty
+-- 	, IFNULL(SUM(vbi.qty), 0) AS inQty
+-- 	, g.unit
+-- 	, vb.isSubmit
+-- 	, vbd.inTime
+-- 	, c.`name` AS customerName
+-- FROM erp_vendi_back_detail vbd
+-- INNER JOIN erp_vendi_back vb ON vb.id = vbd.erp_vendi_back_id
+-- INNER JOIN autopart01_crm.`erc$customer` c ON c.id = vb.customerId
+-- INNER JOIN v_goods_information g ON g.id = vbd.goodsId
+-- LEFT JOIN erp_vendi_back_intoqty vbi ON vbi.erp_vendi_back_detail_id = vbd.id
+-- WHERE vb.isSubmit = 1 AND ISNULL(vbd.inTime)
+-- GROUP BY vbd.id
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_back_in_sncode;
+-- CREATE VIEW v_vendi_back_in_sncode AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售退货进仓右下二维码表
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		b.id
+-- 	, b.goodsId
+-- 	, g.`name` AS goodsName
+-- 	, 1 AS packageQty
+-- 	, p.packageUnit
+-- 	, b.qty
+-- 	, b.state
+-- 	, a.erp_sales_detail_id AS salesDetailId
+-- 	, a.erp_vendi_bil_id AS vendiId
+-- 	, d.id AS vbdid
+-- 	, g.vehicleAs
+-- 	, g.partCode AS goodspartCode
+-- 	, p.spec
+-- 	, p.quality
+-- FROM erp_vendi_bil_goutqty a 
+-- INNER JOIN erp_purchdetail_sncode b ON b.id = a.erp_purchDetail_snCode_id
+-- INNER JOIN erp_vendi_back_detail d ON d.erp_sales_detail_id = a.erp_sales_detail_id
+-- INNER JOIN erp_goods g ON g.id = a.goodsId
+-- INNER JOIN ers_packageattr p ON p.id = b.ers_packageattr_id
+-- WHERE b.state = -1
+-- ;
+
+-- 销售退货提货单bar
+-- DROP VIEW IF EXISTS v_vendi_back_pick_bar;
+-- CREATE VIEW v_vendi_back_pick_bar AS
+-- SELECT
+-- 		a.erp_vendi_back_id AS vendiBackId
+-- 	, a.inquiryCode
+-- 	, a.pickNo
+-- 	, a.shipperName
+-- 	, a.packageQty
+-- 	, a.pickEmpName
+-- 	, a.takeGeoTel
+-- 	, a.memo
+-- 	, a.pickTime
+-- 	, a.endTime
+-- 	, a.opTime
+-- 	, a.lastModifiedDate
+-- FROM erp_vendi_back_pick a 
+-- ;
+
+-- 采购单汇款确认winform
+-- DROP VIEW IF EXISTS v_purch_cost_winform;
+-- CREATE VIEW v_purch_cost_winform AS
+-- SELECT
+-- 		p.id
+-- 	, p.purchCode
+-- 	, p.priceSumCome
+-- 	, p.isCheck
+-- 	, p.costTime
+-- 	, CASE WHEN SUM(pd.amt) > 0 THEN SUM(pd.amt) ELSE 0 END AS priceSumCost
+-- FROM erp_purch_bil p
+-- LEFT JOIN erp_purch_detail pd ON pd.erp_purch_bil_id = p.id AND pd.costTime > 0
+-- GROUP BY p.id
+-- ;
+
+-- 采购单汇款确认modgrid
+-- DROP VIEW IF EXISTS v_purch_cost_modgrid;
+-- CREATE VIEW v_purch_cost_modgrid AS
+-- SELECT
+-- 		pd.id
+-- 	, pd.erp_purch_bil_id AS purchId
+-- 	, s.`name` AS supplierName
+-- 	, g.`name` AS goodsName
+-- 	, g.partCode AS goodspartCode
+-- 	, g.origin AS goodsorigin
+--  , g.brand AS goodsbrand
+-- 	, pd.qty
+-- 	, pd.packageUnit
+-- 	, pd.amt
+-- 	, pd.costTime
+-- FROM erp_purch_detail pd
+-- INNER JOIN erp_goods g ON g.id = pd.goodsId
+-- LEFT JOIN autopart01_crm.`erc$supplier` s ON s.id = pd.supplierId
+-- ;
+
+-- 商品所在仓位位置，并存量多的排最前
+-- DROP VIEW IF EXISTS v_goods_concat_shelfName;
+-- CREATE VIEW v_goods_concat_shelfName AS
+-- SELECT 
+-- 		sb.goodsId
+-- 	, GROUP_CONCAT(s.title ORDER BY sb.qty DESC) AS shelfNames
+-- FROM ers_shelfbook sb
+-- INNER JOIN ers_shelfattr s ON s.id = sb.ers_shelfattr_id
+-- WHERE sb.qty > 0 
+-- GROUP BY sb.goodsId
+-- ;
+
+-- 商品详细信息视图
+-- DROP VIEW IF EXISTS v_goods_information;
+-- CREATE VIEW v_goods_information AS
+-- 无参考售价
+-- SELECT
+-- 		g.id
+-- 	, g.partCode
+-- 	, g.`name`
+-- 	, mvp.id AS itemId
+-- 	, mvp.nameAs
+-- 	, g.vehicleAs
+-- 	, g.origin
+-- 	, g.brand
+-- 	, g.unit
+-- 	, gb.minqty
+-- 	, gb.dynamicQty
+-- 	, gb.staticQty
+-- 	, sh.shelfNames
+-- 	, p.spec
+-- 	, p.quality
+-- 	, p.actualQty
+-- 	, p.packageUnit
+-- 	, p.id AS packageAttrId
+-- 	, p.newSupplierId
+-- 	, p.newPrice
+-- 	, p.minPrice
+-- 	, p.maxPrice
+-- 	, p.newSalesPrice
+-- 	, p.minSalesPrice
+-- 	, p.maxSalesPrice
+-- 	, mvp.url
+-- FROM erp_goods g
+-- INNER JOIN erp_goodsbook gb ON gb.goodsId = g.id
+-- INNER JOIN ers_packageattr p ON p.goodsId = g.id AND p.actualQty = 1
+-- INNER JOIN autopart01_modeldb.`erv$vhcl_part` mvp ON mvp.id = g.itemId
+-- LEFT JOIN v_goods_concat_shelfName sh ON sh.goodsId = g.id
+-- -- ;
+-- 有参考售价
+-- SELECT
+-- 		g.id
+-- 	, g.partCode
+-- 	, g.`name`
+-- 	, mvp.id AS itemId
+-- 	, mvp.nameAs
+-- 	, g.vehicleAs
+-- 	, g.origin
+-- 	, g.brand
+-- 	, g.unit
+-- 	, gb.minqty
+-- 	, gb.dynamicQty
+-- 	, gb.staticQty
+-- 	, sh.shelfNames
+-- 	, p.spec
+-- 	, p.quality
+-- 	, p.actualQty
+-- 	, p.packageUnit
+-- 	, p.id AS packageAttrId
+-- 	, p.newSupplierId
+-- 	, p.newPrice
+-- 	, p.minPrice
+-- 	, p.maxPrice
+-- 	, p.newSalesPrice
+-- 	, p.minSalesPrice
+-- 	, p.maxSalesPrice
+-- 	, CASE WHEN cptr.ratio > 0 THEN cptr.ratio ELSE sys_set.`value` END AS ratio
+-- 	, CASE WHEN cptr.ratio > 0 AND p.newPrice > 0 THEN cptr.ratio * p.newPrice WHEN p.newPrice > 0 THEN sys_set.`value` * p.newPrice ELSE NULL END AS referSalesPrice
+-- 	, mvp.url
+-- FROM erp_goods g
+-- INNER JOIN erp_goodsbook gb ON gb.goodsId = g.id
+-- INNER JOIN ers_packageattr p ON p.goodsId = g.id AND p.actualQty = 1
+-- INNER JOIN autopart01_modeldb.`erv$vhcl_part` mvp ON mvp.id = g.itemId
+-- LEFT JOIN v_goods_concat_shelfName sh ON sh.goodsId = g.id
+-- LEFT JOIN erp_conf_price_tune_rule cptr ON cptr.goodsId = g.id
+-- LEFT JOIN sys_set ON sys_set.id = 1
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_back_bar;
+-- CREATE VIEW v_purch_back_bar AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购退货单bargrid
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pb.id
+-- 	, pb.`code`
+-- 	, pb.inquiryCode
+-- 	, pb.purchCode
+-- 	, pb.isCheck
+-- 	, pb.priceSumCome
+-- 	, pb.empName
+-- 	, pb.lastModifiedEmpName
+-- 	, pb.createdDate
+-- 	, pb.lastModifiedDate
+-- 	, pb.outTime
+-- 	, pb.costTime
+-- 	, pb.reason
+-- 	, pb.memo
+-- 	, s.`name` AS supplierName
+-- FROM erp_purch_back pb
+-- INNER JOIN autopart01_crm.`erc$supplier` s ON s.id = pb.supplierId
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_back_out;
+-- CREATE VIEW v_purch_back_out AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购退货进仓BarGrid、winform
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pbd.id
+-- 	, pbd.erp_purch_detail_id AS purchDetailId
+-- 	, pb.`code` AS purchBackCode
+-- 	, pb.purchCode
+-- 	, pb.createdDate
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, g.partCode AS goodspartCode
+-- 	, g.brand AS goodsbrand
+-- 	, g.origin AS goodsorigin
+-- 	, g.shelfNames
+-- 	, pbd.qty
+-- 	, IFNULL(SUM(pbg.qty),0) AS outOty
+-- 	, g.unit
+-- 	, pb.isCheck
+-- 	, pbd.outTime
+-- 	, s.`name` AS supplierName
+-- FROM erp_purch_back_detail pbd
+-- INNER JOIN erp_purch_back pb ON pb.id = pbd.erp_purch_back_id
+-- INNER JOIN autopart01_crm.`erc$supplier` s ON s.id = pb.supplierId
+-- INNER JOIN v_goods_information g ON g.id = pbd.goodsId
+-- LEFT JOIN erp_purch_back_goutqty pbg ON pbg.erp_purch_back_detail_id = pbd.id
+-- WHERE pb.isCheck = 1 AND ISNULL(pbd.outTime)
+-- GROUP BY pbd.id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_purch_back_out_sncode;
+-- CREATE VIEW v_purch_back_out_sncode AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购退货进仓右下二维码表
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		b.id
+-- 	, b.goodsId
+-- 	, g.`name` AS goodsName
+-- 	, 1 AS packageQty
+-- 	, p.packageUnit
+-- 	, b.qty
+-- 	, b.state
+-- 	, b.stockState
+-- 	, a.erp_purch_detail_id
+-- 	, a.erp_purch_bil_id
+-- 	, d.id AS pbdid
+-- 	, g.vehicleAs
+-- 	, g.partCode AS goodspartCode
+-- 	, s.title AS shelfName
+-- 	, p.spec
+-- 	, p.quality
+-- FROM erp_purch_bil_intoqty a 
+-- INNER JOIN erp_purchdetail_sncode b ON b.id = a.erp_purchDetail_snCode_id
+-- INNER JOIN erp_purch_back_detail d ON d.erp_purch_detail_id = a.erp_purch_detail_id
+-- INNER JOIN erp_goods g ON g.id = a.goodsId
+-- INNER JOIN ers_packageattr p ON p.id = b.ers_packageattr_id
+-- INNER JOIN ers_shelfattr s ON s.id = b.ers_shelfattr_id
+-- WHERE b.state = 1 AND b.stockState = 0
+-- ;
+
+-- DROP VIEW IF EXISTS v_supplier_payment;
+-- CREATE VIEW v_supplier_payment AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 供应商支付方式modgrid
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		sp.id
+-- 	, s.id AS supplierId
+-- 	, s.`name` AS supplierName
+-- 	, s.contacts
+-- 	, s.callnum
+-- 	, s.addrroad
+-- 	, s.mainpartname
+-- 	, s.mainvehicleAs
+-- 	, s.tags
+-- 	, pt.id AS paymentTypeId
+-- 	, pt.type AS paymentType
+-- FROM erp_supplier_payment sp
+-- INNER JOIN autopart01_crm.`erc$supplier` s ON s.id = sp.supplierId
+-- INNER JOIN erp_payment_type pt ON pt.id = sp.erp_payment_type_id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_purch_bar;
+-- CREATE VIEW v_purch_bar AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购单bargrid
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		p.id
+-- 	, p.isCheck
+-- 	, p.isReceive
+-- 	, p.purchCode
+-- 	, s.`name` AS supplierName
+-- 	, c.`name` AS customerName
+-- 	, s.onlines1 AS supplierQQ
+-- 	, s.callnum
+-- 	, s.telephone
+-- 	, pt.type AS paymentType
+-- 	, p.priceSumCome
+-- 	, p.priceSumShip
+-- 	, p.needTime
+-- 	, p.empName
+-- 	, p.applyPickTime
+-- 	, p.createdDate
+-- 	, p.lastModifiedDate
+-- 	, p.lastModifiedEmpName
+-- 	, p.costTime
+-- 	, p.inTime
+-- 	, p.checkReason
+-- 	, p.memo
+-- 	, p.creatorId
+-- FROM erp_purch_bil p 
+-- LEFT JOIN erp_payment_type pt ON pt.id = p.erp_payment_type_id
+-- LEFT JOIN autopart01_crm.`erc$supplier` s ON s.id = p.supplierId
+-- LEFT JOIN erp_vendi_bil vb ON vb.id = p.erp_vendi_bil_id
+-- LEFT JOIN autopart01_crm.`erc$customer` c ON c.id = vb.customerId
+-- WHERE ISNULL(p.ers_inventory_id)
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_purch_getQrCode;
+-- CREATE VIEW v_purch_getQrCode AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 获取采购明细二维码表格，用于打印1
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pds.id AS qrcodeId
+-- 	, pds.erp_purch_detail_id
+-- 	, pds.goodsId
+-- 	, pds.degree
+-- 	, pds.qty
+-- 	, pds.snCode
+-- 	, g.`name` AS goodsName
+-- 	, p.packageUnit
+-- 	, p.title
+-- 	, IFNULL(pb.purchCode,pb.`code`) AS purchCode
+-- FROM erp_purchdetail_sncode pds
+-- LEFT JOIN erp_goods g ON g.id = pds.goodsId
+-- LEFT JOIN ers_packageattr p ON p.id = pds.ers_packageattr_id
+-- LEFT JOIN erp_purch_bil pb ON pb.id = pds.erp_purch_bil_id
+-- ;
+-- 
+
+-- DROP VIEW IF EXISTS v_purch_getQrCode;
+-- CREATE VIEW v_purch_getQrCode AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 获取采购明细二维码表格，用于打印1
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pds.id AS qrcodeId
+-- 	, pds.erp_purch_detail_id
+-- 	, pds.isPrint
+-- 	, pds.goodsId
+-- 	, pds.state
+-- 	, pds.stockState
+-- 	, pds.degree
+-- 	, 1 AS packageQty
+-- 	, pds.qty
+-- 	, pds.snCode
+-- 	, g.partCode
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, p.packageUnit
+-- 	, g.unit
+-- 	, p.title
+-- 	, pb.purchCode
+-- 	, pb.createdDate
+-- 	, s.`name` AS supplierName
+-- 	, es.title AS shelfName
+-- FROM erp_purchdetail_sncode pds
+-- LEFT JOIN erp_goods g ON g.id = pds.goodsId
+-- LEFT JOIN ers_packageattr p ON p.id = pds.ers_packageattr_id
+-- LEFT JOIN ers_shelfattr es ON es.id = pds.ers_shelfattr_id
+-- LEFT JOIN erp_purch_bil pb ON pb.id = pds.erp_purch_bil_id
+-- LEFT JOIN autopart01_crm.`erc$supplier` s ON s.id = pds.supplierId
+-- ;
+
+-- DROP VIEW IF EXISTS v_supplier_cash_detail;
+-- CREATE VIEW v_supplier_cash_detail AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购单现金汇款明细
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		scd.id
+-- 	, scd.erp_purch_bil_id AS purchId
+-- 	, pb.isCheck AS billIsCheck
+-- 	, scd.isCheck
+-- 	, scd.serialNum
+-- 	, scd.`code`
+-- 	, scd.priceSumCome
+-- 	, vb.priceSumSell
+-- 	, (IFNULL(vb.priceSumSell,0) - IFNULL(scd.priceSumCome,0)) AS profitAmt
+-- 	, scd.supplierReceiving
+-- 	, scd.amountPaying
+-- 	, scd.amountPaid
+-- 	, scd.balance
+-- 	, scd.createdDate
+-- 	, scd.costTime
+-- 	, IFNULL(scd.settleTime,0) AS settleTime
+-- 	, DATE(scd.settleTime) AS aTime
+-- 	, DATE_FORMAT(scd.settleTime,'%Y-%m') AS mTime
+-- 	, scd.empName
+-- 	, scd.handlerEmpName
+-- 	, scd.payAccount
+-- 	, scd.receiveAccount
+-- 	, pt.type AS paymentType
+-- 	, scd.pasteimg
+-- 	, scd.memo
+-- 	, pb.empName AS purchEmpName
+-- 	, s.`name` AS supplierName
+-- 	, s.onlines1 AS supplierQQ
+-- 	, c.`name` AS customerName
+-- FROM erf_supplier_cash_detail scd
+-- INNER JOIN erp_purch_bil pb ON pb.id = scd.erp_purch_bil_id
+-- INNER JOIN autopart01_crm.`erc$supplier` s ON s.id = scd.supplierId
+-- LEFT JOIN erp_vendi_bil vb ON vb.id = pb.erp_vendi_bil_id
+-- LEFT JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- LEFT JOIN erp_payment_type pt ON pt.id = scd.erp_payment_type_id
+-- ;
+
+-- DROP VIEW IF EXISTS v_supplier_cash_max;
+-- CREATE VIEW v_supplier_cash_max AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购单现金汇款最大一条明细(已删除)
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		scd.erp_purch_bil_id
+-- 	, MAX(scd.amountPaid) AS amountPaid
+-- FROM erf_supplier_cash_detail scd
+-- GROUP BY scd.erp_purch_bil_id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_purch_cost_cash;
+-- CREATE VIEW v_purch_cost_cash AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购单现金汇款(旧,已删除)
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		p.id
+-- 	, p.purchCode
+-- 	, p.priceSumCome
+-- 	, p.isCost
+-- 	, p.costTime
+-- 	, pt.type AS paymentType
+-- 	, s.`name` AS supplierName
+-- 	, IFNULL(scm.amountPaid,0) AS amountPaid
+-- 	, IFNULL(p.priceSumCome - amountPaid, p.priceSumCome) AS balance
+-- 	, p.isCheck
+-- FROM erp_purch_bil p
+-- INNER JOIN erp_payment_type pt ON pt.id = p.erp_payment_type_id
+-- INNER JOIN autopart01_crm.`erc$supplier` s ON s.id = p.supplierId
+-- LEFT JOIN v_supplier_cash_max scm ON scm.erp_purch_bil_id = p.id
+-- WHERE p.erp_payment_type_id = 1 AND p.isCheck = 1
+-- ;
+
+-- DROP VIEW IF EXISTS v_customer_cash_max;
+-- CREATE VIEW v_customer_cash_max AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售单现金收款最大一条明细(已删除)
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		ccd.erp_vendi_bil_id
+-- 	, MAX(ccd.amountReceived) AS amountReceived
+-- FROM erf_customer_cash_detail ccd
+-- GROUP BY ccd.erp_vendi_bil_id
+-- ;
+
+-- DROP VIEW IF EXISTS v_customer_cost_cash;
+-- CREATE VIEW v_customer_cost_cash AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售单现金收款(旧,已删除)
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		v.id
+-- 	, v.inquiryCode
+-- 	, v.priceSumSell
+-- 	, v.isCost
+-- 	, v.costTime
+-- 	, pt.type AS paymentType
+-- 	, c.`name` AS customerName
+-- 	, IFNULL(ccm.amountReceived,0) AS amountReceived
+-- 	, IFNULL(v.priceSumSell - ccm.amountReceived,v.priceSumSell) AS balance
+-- 	, v.isCheck
+-- FROM erp_vendi_bil v
+-- INNER JOIN erp_payment_type pt ON pt.id = v.erp_payment_type_id
+-- INNER JOIN autopart01_crm.`erc$customer` c ON c.id = v.customerId
+-- LEFT JOIN v_customer_cash_max ccm ON ccm.erp_vendi_bil_id = v.id
+-- WHERE v.erp_payment_type_id = 1
+-- ;
+
+-- DROP VIEW IF EXISTS v_customer_cash_detail;
+-- CREATE VIEW v_customer_cash_detail AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售单现金收款明细
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		ccd.id
+-- 	, ccd.erp_vendi_bil_id AS vendiId
+-- 	, ccd.serialNum
+-- 	, ccd.`code`
+-- 	, ccd.customId
+-- 	, ccd.isCheck
+-- -- 	, IFNULL(SUM(pb.priceSumCome),0) AS priceSumCome
+-- 	, CASE WHEN ISNULL(pb.priceSumCome) THEN (SELECT SUM(IFNULL(p.newPrice,0)*sd.packageQty) FROM erp_sales_detail sd INNER JOIN ers_packageattr p ON p.goodsId = sd.goodsId AND p.degree = 1 WHERE sd.erp_vendi_bil_id = vb.id) ELSE SUM(pb.priceSumCome) END AS priceSumCome
+-- 	, ccd.priceSumSell
+-- -- 	, (IFNULL(ccd.priceSumSell,0) - IFNULL(pb.priceSumCome,0)) AS profitAmt
+-- 	, CASE WHEN ISNULL(pb.priceSumCome) THEN (SELECT IFNULL(ccd.priceSumSell,0) - SUM(IFNULL(p.newPrice,0)*sd.packageQty) FROM erp_sales_detail sd INNER JOIN ers_packageattr p ON p.goodsId = sd.goodsId AND p.degree = 1 WHERE sd.erp_vendi_bil_id = vb.id) ELSE IFNULL(ccd.priceSumSell,0) - SUM(pb.priceSumCome) END AS profitAmt
+-- 	, ccd.deposit
+-- 	, ccd.customerPaying
+-- 	, ccd.amountReceiving
+-- 	, ccd.amountReceived
+-- 	, ccd.balance
+-- 	, ccd.createdDate
+-- 	, ccd.costTime
+-- 	, IFNULL(ccd.settleTime,0) AS settleTime
+-- 	, DATE(ccd.settleTime) AS aTime
+-- 	, DATE_FORMAT(ccd.settleTime,'%Y-%m') AS mTime
+-- 	, ccd.empName
+-- 	, ccd.handlerEmpName
+-- 	, ccd.payAccount
+-- 	, ccd.receiveAccount
+-- 	, pt.type AS paymentType
+-- 	, ccd.pasteimg
+-- 	, ccd.memo
+-- 	, vb.purchEmpName
+-- 	, c.`name` AS customerName
+-- FROM erf_customer_cash_detail ccd
+-- INNER JOIN erp_vendi_bil vb ON vb.id = ccd.erp_vendi_bil_id
+-- INNER JOIN autopart01_crm.`erc$customer` c ON c.id = ccd.customerId
+-- LEFT JOIN erp_purch_bil pb ON pb.erp_vendi_bil_id = vb.id
+-- LEFT JOIN erp_payment_type pt ON pt.id = ccd.erp_payment_type_id
+-- GROUP BY ccd.id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_month_statement;
+-- CREATE VIEW v_month_statement AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 月结算
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		DATE_FORMAT(dsa.createdDate, '%Y-%m') AS createdDate
+-- 	, SUM(dsa.amountReceived) + (SELECT dsb.amountReceivedBalance FROM erf_daily_statement dsb WHERE dsb.createdDate = MAX(dsa.createdDate)) AS amountReceiveSum
+-- 	, SUM(dsa.amountReceived) AS amountReceived
+-- 	, (SELECT dsb.amountReceivedBalance FROM erf_daily_statement dsb WHERE dsb.createdDate = MAX(dsa.createdDate)) AS amountReceivedBalance
+-- 	, SUM(dsa.amountPaid) + (SELECT dsb.amountPaidBalance FROM erf_daily_statement dsb WHERE dsb.createdDate = MAX(dsa.createdDate)) AS amountPaySum
+-- 	, SUM(dsa.amountPaid) AS amountPaid
+-- 	, (SELECT dsb.amountPaidBalance FROM erf_daily_statement dsb WHERE dsb.createdDate = MAX(dsa.createdDate)) AS amountPaidBalance
+-- FROM erf_daily_statement dsa
+-- GROUP BY MONTH(dsa.createdDate)
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_back_bar;
+-- CREATE VIEW v_vendi_back_bar AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售退货bargrid
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, vb.isCheck
+-- 	, vb.`code`
+-- 	, vb.inquiryCode
+-- 	, vb.reason
+-- 	, vb.memo
+-- 	, vb.creatorId
+-- 	, vb.empName
+-- 	, vb.createdDate
+-- 	, vb.lastModifiedDate
+-- 	, c.`name` AS customerName
+-- FROM erp_vendi_back vb
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- ;
+
+-- DROP VIEW IF EXISTS v_goods_price_rule;
+-- CREATE VIEW v_goods_price_rule AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 商品调价规则bargrid
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		gi.id AS goodsId
+-- 	, gi.partCode
+-- 	, gi.`name` AS goodsName
+-- 	, gi.vehicleAs
+-- 	, cptr.`name` AS ruleName
+-- 	, cptr.ratio
+-- 	, cptr.floatMin
+-- 	, cptr.floatMax
+-- FROM erp_conf_price_tune_rule cptr
+-- INNER JOIN v_goods_information gi ON gi.id = cptr.goodsId
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_vendi_print;
+-- CREATE VIEW v_vendi_print AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售订单打印bargrid
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		v.id
+-- 	, v.isCheck
+-- 	, v.isPrint
+-- 	, v.inquiryCode
+-- 	, v.purchEmpName
+-- 	, IFNULL(v.priceSumSell, 0) AS priceSumSell
+-- 	, IFNULL(v.priceSumShip, 0) AS priceSumShip
+-- 	, (IFNULL(v.priceSumSell,0) + IFNULL(v.priceSumShip,0)) AS priceSellShip
+-- 	, v.createdDate
+-- 	, v.memo
+-- 	, v.customerDemand
+-- 	, s.`name` AS sellerName
+-- 	, s.onlines1 AS qq
+-- 	, s.mail AS email
+-- 	, c.`name` AS customerName
+-- 	, eca.callnum
+-- 	, eca.addrroad
+-- 	, pt.type AS payType
+-- FROM erp_vendi_bil v
+-- INNER JOIN erp_payment_type pt ON pt.id = v.erp_payment_type_id
+-- INNER JOIN autopart01_crm.erc$staff s ON s.userId = v.creatorId
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = v.customerId
+-- LEFT JOIN autopart01_crm.erc_customer_address eca ON eca.id = v.erc$telgeo_contact_id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_vendi_detail_print;
+-- CREATE VIEW v_vendi_detail_print AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售订单明细打印
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		sd.id
+-- 	, sd.erp_vendi_bil_id AS vendiId
+-- 	, g.partCode
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, g.brand
+-- 	, sd.packageQty
+-- 	, sd.packageUnit
+-- 	, sd.salesPackagePrice
+-- 	, sd.salesAmt
+-- 	, sd.memo
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_goods g ON g.id = sd.goodsId
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_print;
+-- CREATE VIEW v_purch_print AS
+-- -- ------------------------------------------------------------------------------------------------------------------
+-- -- 采购订单打印bargrid
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pb.id
+-- 	, pb.isPrint
+-- 	, pb.purchCode
+-- 	, pb.empName AS purchEmpName
+-- 	, IFNULL(pb.priceSumCome,0) AS priceSumCome
+-- 	, IFNULL(pb.priceSumShip,0) AS priceSumShip
+-- 	, (IFNULL(pb.priceSumCome,0) + IFNULL(pb.priceSumShip,0)) AS priceComeShip
+-- 	, pb.createdDate
+-- 	, s.`name` AS supplierName
+-- 	, esa.callnum
+-- 	, esa.addrroad
+-- FROM erp_purch_bil pb
+-- INNER JOIN autopart01_crm.erc$supplier s ON s.id = pb.supplierId
+-- LEFT JOIN autopart01_crm.erc_supplier_address esa ON esa.id = pb.erc$telgeo_contact_id
+-- WHERE pb.isCheck > 0 AND ISNULL(pb.ers_inventory_id)
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_detail_print;
+-- CREATE VIEW v_purch_detail_print AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购订单明细打印
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pd.id
+-- 	, pd.erp_purch_bil_id AS purchId
+-- 	, g.partCode
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, pd.packageQty
+-- 	, pd.packageUnit
+-- 	, pd.packagePrice
+-- 	, pd.amt
+-- FROM erp_purch_detail pd
+-- INNER JOIN erp_goods g ON g.id = pd.goodsId
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_vendi_out_print;
+-- CREATE VIEW v_vendi_out_print AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售订单仓库打印bargrid
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, CASE WHEN vb.outTime > 0 THEN 1 ELSE 0 END AS isOut
+-- 	, vb.inquiryCode
+-- 	, vb.empName
+-- 	, vb.purchEmpName
+-- 	, vb.createdDate
+-- 	, vb.takeGeoTel
+-- 	, vb.customerDemand
+-- 	, vb.memo
+-- 	, c.`name` AS customerName
+-- 	, dt.type AS deliveryType
+-- FROM erp_vendi_bil vb 
+-- INNER JOIN erp_delivery_type dt ON dt.id = vb.erp_delivery_type_id
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- WHERE vb.isCheck = 1
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_back_print;
+-- CREATE VIEW v_vendi_back_print AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售退货单打印bargrid
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, vb.isCheck
+-- 	, vb.isPrint
+-- 	, vb.`code`
+-- 	, IFNULL(vb.priceSumSell, 0) AS priceSumSell
+-- 	, IFNULL(vb.priceSumShip, 0) AS priceSumShip
+-- 	, (IFNULL(vb.priceSumSell, 0) + IFNULL(vb.priceSumShip, 0)) AS priceSellShip
+-- 	, vb.createdDate
+-- 	, vb.memo
+-- 	, vb.reason
+-- 	, c.`name` AS customerName
+-- 	, eca.callnum
+-- 	, eca.addrroad
+-- FROM erp_vendi_back vb
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- INNER JOIN autopart01_crm.erc_customer_address eca ON eca.id = vb.erc$telgeo_contact_id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_vendi_back_detail_print;
+-- CREATE VIEW v_vendi_back_detail_print AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 销售退货单明细打印
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vbd.id
+-- 	, vbd.erp_vendi_back_id AS vendiBackId
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, g.brand
+-- 	, vbd.packageQty
+-- 	, vbd.packageUnit
+-- 	, vbd.salesPackagePrice
+-- 	, vbd.salesAmt
+-- FROM erp_vendi_back_detail vbd
+-- INNER JOIN erp_goods g ON g.id = vbd.goodsId
+-- ;
+
+-- DROP VIEW IF EXISTS v_bill_detail_history;
+-- CREATE VIEW v_bill_detail_history AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 历史询价、销售单查询
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT -- 询价单
+-- 		CONCAT(UUID_SHORT(),vd.id) AS id
+-- 	, 1 AS type
+-- 	, ib.`code`
+-- 	, c.`name` AS customerName
+-- 	, ib.createdDate
+-- 	, gi.partCode
+-- 	, gi.`name` AS goodsName
+-- 	, gi.vehicleAs
+-- 	, vd.qty
+-- 	, IFNULL(vd.salesPackagePrice,0) AS salesPackagePrice
+-- 	, gi.dynamicQty
+-- FROM erp_vendi_detail vd
+-- INNER JOIN erp_inquiry_bil ib ON ib.id = vd.erp_inquiry_bil_id
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = ib.customerId
+-- INNER JOIN v_goods_information gi ON gi.id = vd.goodsId
+-- UNION
+-- SELECT -- 销售单
+-- 		CONCAT(UUID_SHORT(),sd.id) AS id
+-- 	, 2 AS type
+-- 	, vb.inquiryCode AS `code`
+-- 	, cc.`name` AS customerName
+-- 	, vb.createdDate
+-- 	, gii.partCode
+-- 	, gii.`name` AS goodsName
+-- 	, gii.vehicleAs
+-- 	, sd.qty
+-- 	, IFNULL(sd.salesPackagePrice,0) AS salesPackagePrice
+-- 	, gii.dynamicQty
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_vendi_bil vb ON vb.id = sd.erp_vendi_bil_id
+-- INNER JOIN autopart01_crm.erc$customer cc ON cc.id = vb.customerId
+-- INNER JOIN v_goods_information gii ON gii.id = sd.goodsId
+-- UNION 
+-- SELECT -- 报价单
+-- 		CONCAT(UUID_SHORT(),vd.id) AS id
+-- 	, 3 AS type
+-- 	, ib.`code`
+-- 	, c.`name` AS customerName
+-- 	, ib.createdDate
+-- 	, gi.partCode
+-- 	, gi.`name` AS goodsName
+-- 	, gi.vehicleAs
+-- 	, vd.qty
+-- 	, IFNULL(vd.packagePrice,0) AS salesPackagePrice
+-- 	, gi.dynamicQty
+-- FROM erp_vendi_detail vd
+-- INNER JOIN erp_inquiry_bil ib ON ib.id = vd.erp_inquiry_bil_id
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = ib.customerId
+-- INNER JOIN v_goods_information gi ON gi.id = vd.goodsId
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_quote_bill_detail_history;
+-- CREATE VIEW v_quote_bill_detail_history AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 历史报价查询
+-- -- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT -- 报价单
+-- 		CONCAT(UUID_SHORT(),vd.id) AS id
+-- 	, 3 AS type
+-- 	, ib.`code`
+-- 	, c.`name` AS customerName
+-- 	, s.id AS supplierId
+-- 	, s.`name` AS supplierName
+-- 	, s.callnum AS supplierCallnum
+-- 	, s.onlines1 AS supplierQQ
+-- 	, ib.createdDate
+-- 	, gi.id AS goodsId
+-- 	, gi.partCode
+-- 	, gi.`name` AS goodsName
+-- 	, gi.vehicleAs
+-- 	, vd.qty
+-- 	, gi.brand
+-- 	, gi.packageAttrId
+-- 	, gi.packageUnit
+-- 	, gi.actualQty
+-- 	, IFNULL(vd.packagePrice,0) AS packagePrice
+-- 	, gi.dynamicQty
+-- 	, gi.newPrice
+-- 	, ib.updateEmpName
+-- 	, vd.updatedDate
+-- FROM erp_vendi_detail vd
+-- INNER JOIN erp_inquiry_bil ib ON ib.id = vd.erp_inquiry_bil_id
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = ib.customerId
+-- INNER JOIN v_goods_information gi ON gi.id = vd.goodsId
+-- LEFT JOIN autopart01_crm.erc$supplier s ON s.id = vd.supplierId
+-- WHERE ib.updaterId > -1
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_bill_detail_history;
+-- CREATE VIEW v_purch_bill_detail_history AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 历史采购单明细查询
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT -- 采购单
+-- 		CONCAT(UUID_SHORT(),pd.id) AS id
+-- 	, 4 AS type
+-- 	, pb.purchCode AS `code`
+-- 	, s.`name` AS supplierName
+-- 	, s.onlines1 AS supplierQQ
+-- 	, pb.createdDate
+-- 	, gi.partCode
+-- 	, gi.`name` AS goodsName
+-- 	, gi.vehicleAs
+-- 	, pd.qty
+-- 	, IFNULL(pd.packagePrice,0) AS packagePrice
+-- 	, gi.dynamicQty
+-- FROM erp_purch_detail pd
+-- INNER JOIN erp_purch_bil pb ON pb.id = pd.erp_purch_bil_id
+-- INNER JOIN autopart01_crm.erc$supplier s ON s.id = pb.supplierId
+-- INNER JOIN v_goods_information gi ON gi.id = pd.goodsId
+-- ;
+
+-- DROP VIEW IF EXISTS v_get_inventory_purchId;
+-- CREATE VIEW v_get_inventory_purchId AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 获取盘点单生成的采购单ID
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT 
+-- 		pb.id
+-- 	, i.ers_inventory_task_id AS itid
+-- FROM ers_inventory i
+-- INNER JOIN erp_purch_bil pb ON pb.ers_inventory_id = i.id
+-- ;
+
+-- DROP VIEW IF EXISTS v_shelfattr;
+-- CREATE VIEW v_shelfattr AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 获取仓位信息
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT 
+-- 		sa.id
+-- 	, sa.title AS shelfName
+-- 	, ra.title AS roomName
+-- FROM ers_shelfattr sa
+-- INNER JOIN ers_roomattr ra ON sa.roomId = ra.id
+-- ;
+
+-- DROP VIEW IF EXISTS v_customer_cash_vendi_detail;
+-- CREATE VIEW v_customer_cash_vendi_detail AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售收款查看销售明细
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		sd.id
+-- 	, vb.id AS vendiId
+-- 	, g.`name` AS goodsName
+-- 	, g.partCode AS goodspartCode
+-- 	, g.vehicleAs
+-- 	, g.spec
+-- 	, g.quality
+-- 	, g.unit
+-- 	, sd.packageQty
+-- 	, sd.salesPackagePrice
+-- 	, sd.salesAmt
+-- 	, IFNULL(pd.packagePrice,g.newPrice) AS packagePrice
+-- 	, IFNULL(pd.amt,g.newPrice * sd.packageQty) AS amt
+-- 	, (IFNULL(sd.salesPackagePrice,0) - IFNULL(pd.packagePrice,IFNULL(g.newPrice,0))) AS profitPrice
+-- 	, (IFNULL(sd.salesAmt,0) - IFNULL(pd.packagePrice,IFNULL(g.newPrice,0))*sd.packageQty) AS profitAmt
+-- 	, c.`name` AS customerName
+-- 	, s.`name` AS supplierName
+-- 	, vb.empName
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_vendi_bil vb ON vb.id = sd.erp_vendi_bil_id
+-- INNER JOIN v_goods_information g ON g.id = sd.goodsId
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- LEFT JOIN autopart01_crm.erc$supplier s ON s.id = sd.supplierId
+-- LEFT JOIN erp_purch_detail pd ON pd.erp_sales_detail_id = sd.id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_supplier_cash_purch_detail;
+-- CREATE VIEW v_supplier_cash_purch_detail AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 采购汇款查看采购明细
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pd.id
+-- 	, pb.id AS purchId
+-- 	, g.`name` AS goodsName
+-- 	, g.partCode AS goodspartCode
+-- 	, g.vehicleAs
+-- 	, g.spec
+-- 	, g.quality
+-- 	, g.unit
+-- 	, pd.packageQty
+-- 	, pd.packagePrice
+-- 	, pd.amt
+-- 	, sd.salesPackagePrice
+-- 	, sd.salesAmt
+-- 	, (IFNULL(sd.salesPackagePrice,0) - IFNULL(pd.packagePrice,0)) AS profitPrice
+-- 	, (IFNULL(sd.salesAmt,0) - IFNULL(pd.amt,0)) AS profitAmt
+-- 	, c.`name` AS customerName
+-- 	, s.`name` AS supplierName
+-- 	, pb.empName
+-- FROM erp_purch_detail pd
+-- INNER JOIN erp_purch_bil pb ON pb.id = pd.erp_purch_bil_id
+-- INNER JOIN v_goods_information g ON g.id = pd.goodsId
+-- INNER JOIN autopart01_crm.erc$supplier s ON s.id = pb.supplierId
+-- LEFT JOIN erp_vendi_bil vb ON vb.id = pb.erp_vendi_bil_id
+-- LEFT JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- LEFT JOIN erp_sales_detail sd ON sd.id = pd.erp_sales_detail_id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_account_vendi_bill;
+-- CREATE VIEW v_account_vendi_bill AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 会计查看销售订单收款情况
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, vb.inquiryCode AS `code`
+-- 	, c.`name` AS customerName
+-- 	, vb.isCheck
+-- 	, dt.type AS deliveryType
+-- 	, pt.type AS payType
+-- 	, vb.createdDate
+-- 	, IFNULL(vb.costConfirmTime,0) AS costTime
+-- 	, IFNULL(vb.outTime,0) AS outTime
+-- 	, vd.delivTime
+-- 	, vd.endTime
+-- 	, CASE WHEN dt.id = 1 AND vb.costConfirmTime > 0 AND vb.outTime > 0 THEN 1 WHEN dt.id > 1 AND vb.costConfirmTime > 0 AND vb.outTime > 0 AND vd.endTime > 0 THEN 1 ELSE 0 END AS billStatus
+-- 	, vb.empName
+-- 	, vb.purchEmpName
+-- -- 	, IFNULL(pb.priceSumCome,0) AS priceSumCome
+-- 	, CASE WHEN ISNULL(pb.priceSumCome) THEN (SELECT SUM(IFNULL(p.newPrice,0)*sd.packageQty) FROM erp_sales_detail sd INNER JOIN ers_packageattr p ON p.goodsId = sd.goodsId AND p.degree = 1 WHERE sd.erp_vendi_bil_id = vb.id) ELSE (SELECT SUM(pbl.priceSumCome) FROM erp_purch_bil pbl WHERE pbl.erp_vendi_bil_id = vb.id) END AS priceSumCome
+-- 	, (IFNULL(vb.priceSumSell,0) + IFNULL(vb.priceSumShip,0)) AS priceSumSell -- 之后要删除
+-- 	, IFNULL(vb.priceSumSell,0) AS priceSumSellTrue -- 之后要改成priceSumSell
+-- 	, IFNULL(vb.priceSumShip,0) AS priceSumShip
+-- -- 	, (IFNULL(vb.priceSumSell,0) - IFNULL(pb.priceSumCome,0)) AS profitAmt
+-- 	, CASE WHEN ISNULL(pb.priceSumCome) THEN (SELECT IFNULL(vb.priceSumSell,0) - SUM(IFNULL(p.newPrice,0)*sd.packageQty) FROM erp_sales_detail sd INNER JOIN ers_packageattr p ON p.goodsId = sd.goodsId AND p.degree = 1 WHERE sd.erp_vendi_bil_id = vb.id) ELSE IFNULL(vb.priceSumSell,0) - (SELECT SUM(pbl.priceSumCome) FROM erp_purch_bil pbl WHERE pbl.erp_vendi_bil_id = vb.id) END AS profitAmt
+-- 	, MAX(ccd.amountReceived) AS amountReceived
+-- 	, MIN(ccd.balance) AS balance
+-- FROM erp_vendi_bil vb
+-- INNER JOIN erf_customer_cash_detail ccd ON ccd.erp_vendi_bil_id = vb.id
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- INNER JOIN erp_payment_type pt ON pt.id = vb.erp_payment_type_id
+-- INNER JOIN erp_delivery_type dt ON dt.id = vb.erp_delivery_type_id
+-- LEFT JOIN erp_vendi_deliv vd ON vd.erp_vendi_bil_id = vb.id
+-- LEFT JOIN erp_purch_bil pb ON pb.erp_vendi_bil_id = vb.id
+-- GROUP BY vb.id 
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_account_purch_bill;
+-- CREATE VIEW v_account_purch_bill AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 会计查看采购订单收款情况
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pb.id
+-- 	, pb.purchCode AS `code`
+-- 	, s.`name` AS supplierName
+-- 	, c.`name` AS customerName
+-- 	, pb.isCheck
+-- 	, pb.isReceive
+-- 	, pt.type AS payType
+-- 	, pb.createdDate
+-- 	, IFNULL(pb.costTime,0) AS costTime
+-- 	, IFNULL(pb.inTime,0) AS inTime
+-- 	, pp.pickTime
+-- 	, CASE WHEN pb.costTime > 0 AND pb.isReceive = 1 AND pb.inTime > 0 THEN 1 ELSE 0 END AS billStatus
+-- 	, pb.empName
+-- 	, pb.empName AS purchEmpName
+-- 	, (IFNULL(pb.priceSumCome,0) + IFNULL(pb.priceSumShip,0)) AS priceSumCome -- 之后要删除
+-- 	, IFNULL(pb.priceSumCome,0) AS priceSumComeTrue -- 之后要改成priceSumCome
+-- 	, IFNULL(vb.priceSumSell,0) AS priceSumSell
+-- 	, IFNULL(pb.priceSumShip,0) AS priceSumShip
+-- 	, (IFNULL(vb.priceSumSell,0) - IFNULL(pb.priceSumCome,0)) AS profitAmt
+-- 	, MAX(scd.amountPaid) AS amountPaid
+-- 	, MIN(scd.balance) AS balance
+-- 	, pb.checkCancelReason
+-- FROM erp_purch_bil pb 
+-- LEFT JOIN erf_supplier_cash_detail scd ON scd.erp_purch_bil_id = pb.id
+-- INNER JOIN autopart01_crm.erc$supplier s ON s.id = pb.supplierId
+-- INNER JOIN erp_payment_type pt ON pt.id = pb.erp_payment_type_id
+-- LEFT JOIN erp_purch_pick pp ON pp.erp_purch_bil_id = pb.id
+-- LEFT JOIN erp_vendi_bil vb ON vb.id = pb.erp_vendi_bil_id
+-- LEFT JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- WHERE ISNULL(pb.ers_inventory_id) AND pb.isCheck IN (-2, 1, 2)
+-- GROUP BY pb.id
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_deliv_bar;
+-- CREATE VIEW v_vendi_deliv_bar AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售发货单bar
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, IFNULL(vd.endTime,0) AS isEnd
+-- 	, c.`name` AS customerName
+-- 	, vd.shipperName
+-- 	, vd.spendTime
+-- 	, vd.freight
+-- 	, vd.startPoint
+-- 	, vd.endPoint
+-- 	, vd.delivTime
+-- 	, vd.endTime
+-- 	, vd.opTime
+-- 	, vd.delivEmpName
+-- 	, vd.delivNo
+-- 	, vd.memo
+-- 	, vd.takeGeoTel
+-- 	, vd.lastModifiedDate
+-- 	, vb.inquiryCode
+-- FROM erp_vendi_deliv vd
+-- INNER JOIN erp_vendi_bil vb ON vb.id = vd.erp_vendi_bil_id
+-- INNER JOIN autopart01_crm.`erc$customer` c ON c.id = vb.customerId
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_deliv_saledetail;
+-- CREATE VIEW v_vendi_deliv_saledetail AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售发货单配件明细
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		sd.id
+-- 	, sd.erp_vendi_bil_id AS vendiId
+-- 	, vgi.partCode AS goodspartCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, sd.packageQty
+-- 	, vgi.unit AS packageUnit
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_sales_detail sd
+-- INNER JOIN v_goods_information vgi ON sd.goodsId = vgi.id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_purch_pick_purchdetail;
+-- CREATE VIEW v_purch_pick_purchdetail AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 采购提货单配件明细
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pd.id
+-- 	, pd.erp_purch_bil_id AS purchId
+-- 	, vgi.partCode AS goodspartCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, pd.packageQty
+-- 	, vgi.unit AS packageUnit
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_purch_detail pd
+-- INNER JOIN v_goods_information vgi ON pd.goodsId = vgi.id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_vendi_back_pick_vendiVackDetail;
+-- CREATE VIEW v_vendi_back_pick_vendiVackDetail AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售退货提货单配件明细
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vbd.id
+-- 	, vbd.erp_vendi_back_id AS vendiBackId
+-- 	, vgi.partCode AS goodspartCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, vbd.packageQty
+-- 	, vgi.unit AS packageUnit
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_vendi_back_detail vbd
+-- INNER JOIN v_goods_information vgi ON vbd.goodsId = vgi.id
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_purch_back_deliv_purchBackDetail;
+-- CREATE VIEW v_purch_back_deliv_purchBackDetail AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 采购退货发货单配件明细
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pbd.id
+-- 	, pbd.erp_purch_back_id AS purchBackId
+-- 	, pbd.supplierId
+-- 	, vgi.partCode AS goodspartCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, pbd.packageQty
+-- 	, vgi.unit AS packageUnit
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_purch_back_detail pbd
+-- INNER JOIN v_goods_information vgi ON pbd.goodsId = vgi.id
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_in_bar;
+-- CREATE VIEW v_purch_in_bar AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 采购进仓bar
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pb.id
+-- 	, pb.purchCode AS `code`
+-- 	, pb.isReceive
+-- 	, IFNULL(pb.inTime,0) AS isIn
+-- 	, s.`name` AS supplierName
+-- 	, c.`name` AS customerName
+-- 	, pb.empName AS purchEmpName
+-- 	, vb.empName AS vendiEmpName
+-- 	, pb.createdDate
+-- FROM erp_purch_bil pb
+-- INNER JOIN autopart01_crm.erc$supplier s ON s.id = pb.supplierId
+-- LEFT JOIN erp_vendi_bil vb ON vb.id = pb.erp_vendi_bil_id
+-- LEFT JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- WHERE ISNULL(pb.ers_inventory_id) AND pb.isCheck > 0 AND pb.isReceive = 1
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_in_detail;
+-- CREATE VIEW v_purch_in_detail AS
+-- -- -------------------------------------------------------------------------------------------------------------
+-- -- 采购进仓明细
+-- -- -------------------------------------------------------------------------------------------------------------
+-- -- LEFT JOIN连接
+-- SELECT
+-- 		pd.id
+-- 	, pb.id AS pid
+-- 	, pb.purchCode AS `code`
+-- 	, IFNULL(pb.inTime,0) AS isIn
+-- 	, pd.goodsId
+-- 	, vgi.partCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, pd.qty
+-- 	, IFNULL(SUM(pbi.qty),0) AS inQty
+-- 	, vgi.unit
+-- 	, vgi.shelfNames
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_purch_detail pd
+-- INNER JOIN erp_purch_bil pb ON pb.id = pd.erp_purch_bil_id
+-- INNER JOIN v_goods_information vgi ON vgi.id = pd.goodsId
+-- LEFT JOIN erp_purch_bil_intoqty pbi ON pbi.erp_purch_detail_id = pd.id
+-- WHERE pd.isReceive = 1 AND ISNULL(pb.ers_inventory_id)
+-- GROUP BY pd.id
+-- ;
+-- -- 字段子查询
+-- SELECT
+-- 		pd.id
+-- 	, pb.id AS pid
+-- 	, pb.purchCode AS `code`
+-- 	, IFNULL(pb.inTime,0) AS isIn
+-- 	, pd.goodsId
+-- 	, vgi.partCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, pd.qty
+-- 	, (SELECT IFNULL(SUM(pbi.qty),0) FROM erp_purch_bil_intoqty pbi WHERE pbi.erp_purch_detail_id = pd.id) AS inQty
+-- 	, vgi.unit
+-- 	, vgi.shelfNames
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_purch_detail pd
+-- INNER JOIN erp_purch_bil pb ON pb.id = pd.erp_purch_bil_id
+-- INNER JOIN v_goods_information vgi ON vgi.id = pd.goodsId
+-- WHERE pd.isReceive = 1 AND ISNULL(pb.ers_inventory_id)
+-- ;
+-- ---------------------------------------------------------------------------------------------------------------------------------
+
+-- DROP VIEW IF EXISTS v_inventory_in_bar;
+-- CREATE VIEW v_inventory_in_bar AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 盘点进仓bar
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		it.id
+-- 	, it.`code`
+-- 	, IFNULL(it.inTime,0) AS isIn
+-- 	, it.empName
+-- 	, it.createdDate
+-- FROM ers_inventory_task it
+-- WHERE it.isCheck > 0
+-- ;
+
+-- DROP VIEW IF EXISTS v_inventory_in_detail;
+-- CREATE VIEW v_inventory_in_detail AS
+-- -- -------------------------------------------------------------------------------------------------------------
+-- -- 盘点进仓明细
+-- -- -------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pd.id
+-- 	, pb.id AS pbid
+-- 	, i.id AS iid
+-- 	, it.id AS itid
+-- 	, i.`code`
+-- 	, IFNULL(pb.inTime,0) AS isIn
+-- 	, pd.goodsId
+-- 	, gi.partCode
+-- 	, gi.`name` AS goodsName
+-- 	, gi.vehicleAs
+-- 	, pd.qty
+-- 	, IFNULL(SUM(pbi.qty),0) AS inQty
+-- 	, gi.unit
+-- 	, s.id AS sid
+-- 	, s.title AS shelfName
+-- 	, gi.spec
+-- 	, gi.quality
+-- FROM erp_purch_detail pd
+-- INNER JOIN erp_purch_bil pb ON pb.id = pd.erp_purch_bil_id
+-- INNER JOIN ers_inventory i ON i.id = pb.ers_inventory_id
+-- INNER JOIN ers_inventory_task it ON it.id = i.ers_inventory_task_id
+-- INNER JOIN v_goods_information gi ON gi.id = pd.goodsId
+-- INNER JOIN ers_shelfattr s ON s.id = i.ers_shelfattr_id
+-- LEFT JOIN erp_purch_bil_intoqty pbi ON pbi.erp_purch_detail_id = pd.id
+-- WHERE it.isCheck = 1
+-- GROUP BY pd.id
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_stock_bar;
+-- CREATE VIEW v_vendi_stock_bar AS 
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售备货bar
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, vb.inquiryCode AS `code`
+-- 	, IFNULL(vb.stockTime,0) AS isStock
+-- 	, IFNULL(vb.outTime,0) AS isOut
+-- 	, dt.type AS deliveryType
+-- 	, c.`name` AS customerName
+-- 	, vb.empName AS vendiEmpName
+-- 	, vb.purchEmpName
+-- 	, vb.createdDate
+-- 	, vb.takeGeoTel
+-- 	, vb.customerDemand
+-- FROM erp_vendi_bil vb
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- INNER JOIN erp_delivery_type dt ON dt.id = vb.erp_delivery_type_id
+-- WHERE vb.isCheck > 0
+-- ;
+-- 有进仓时间
+-- SELECT
+-- 		vb.id
+-- 	, vb.inquiryCode AS `code`
+-- 	, IFNULL(vb.stockTime,0) AS isStock
+-- 	, pb.id AS pid
+-- 	, CASE WHEN pb.id > 0 AND NOT EXISTS(SELECT 1 FROM erp_purch_bil pb2 WHERE pb2.erp_vendi_bil_id = vb.id AND pb2.inTime > 0 LIMIT 1) THEN -1
+-- 			WHEN pb.id > 0 AND NOT EXISTS(SELECT 1 FROM erp_purch_bil pb2 WHERE pb2.erp_vendi_bil_id = vb.id AND ISNULL(pb2.inTime) LIMIT 1) THEN pb.inTime
+-- 			WHEN pb.id > 0 AND EXISTS(SELECT 1 FROM erp_purch_bil pb2 WHERE pb2.erp_vendi_bil_id = vb.id AND pb2.inTime > 0 LIMIT 1) THEN 0
+-- 			ELSE -2 END AS isIn
+-- 	, IFNULL(vb.outTime,0) AS isOut
+-- 	, dt.type AS deliveryType
+-- 	, c.`name` AS customerName
+-- 	, vb.empName AS vendiEmpName
+-- 	, vb.purchEmpName
+-- 	, vb.createdDate
+-- 	, vb.takeGeoTel
+-- 	, vb.customerDemand
+-- FROM erp_vendi_bil vb
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- INNER JOIN erp_delivery_type dt ON dt.id = vb.erp_delivery_type_id
+-- LEFT JOIN erp_purch_bil pb ON pb.erp_vendi_bil_id = vb.id
+-- WHERE vb.isCheck > 0
+-- GROUP BY vb.id 
+-- ;
+-- 
+-- DROP VIEW IF EXISTS v_vendi_stock_detail;
+-- CREATE VIEW v_vendi_stock_detail AS
+-- -- ---------------------------------------------------------------------------------------------------------------------
+-- -- 销售备货明细
+-- -- ---------------------------------------------------------------------------------------------------------------------
+-- -- LEFT JOIN方式
+-- SELECT
+-- 		sd.id
+-- 	, v.id AS vid
+-- 	, v.inquiryCode AS `code`
+-- 	, IFNULL(sd.stockTime,0) AS isStock
+-- 	, IFNULL(pd.inTime,0) AS isIn
+-- 	, sd.goodsId
+-- 	, g.partCode
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, sd.qty
+-- 	, IFNULL(SUM(vbs.qty),0) AS stockQty
+-- 	, g.unit
+-- 	, g.shelfNames
+-- 	, g.spec
+-- 	, g.quality
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_vendi_bil v ON v.id = sd.erp_vendi_bil_id
+-- INNER JOIN v_goods_information g ON g.id = sd.goodsId
+-- LEFT JOIN erp_purch_detail pd ON pd.erp_sales_detail_id = sd.id
+-- LEFT JOIN erp_vendi_bil_stockqty vbs ON vbs.erp_sales_detail_id = sd.id
+-- WHERE v.isCheck > 0
+-- GROUP BY sd.id
+-- ;
+-- -- 字段子查询方式
+-- SELECT
+-- 		sd.id
+-- 	, v.id AS vid
+-- 	, v.inquiryCode AS `code`
+-- 	, IFNULL(sd.stockTime,0) AS isStock
+-- 	, IFNULL(pd.inTime,0) AS isIn
+-- 	, sd.goodsId
+-- 	, g.partCode
+-- 	, g.`name` AS goodsName
+-- 	, g.vehicleAs
+-- 	, sd.qty
+-- 	, (SELECT IFNULL(SUM(vbs.qty),0) FROM erp_vendi_bil_stockqty vbs WHERE vbs.erp_sales_detail_id = sd.id) AS stockQty
+-- 	, g.unit
+-- 	, g.shelfNames
+-- 	, g.spec
+-- 	, g.quality
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_vendi_bil v ON v.id = sd.erp_vendi_bil_id
+-- INNER JOIN v_goods_information g ON g.id = sd.goodsId
+-- LEFT JOIN erp_purch_detail pd ON pd.erp_sales_detail_id = sd.id
+-- WHERE v.isCheck > 0
+-- ;
+-- -- -------------------------------------------------------------------------------------------------------------------------------
+
+-- 
+-- DROP VIEW IF EXISTS v_vendi_out_bar;
+-- CREATE VIEW v_vendi_out_bar AS 
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售出仓bar
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, vb.inquiryCode AS `code`
+-- 	, IFNULL(vb.stockTime,0) AS isStock
+-- 	, IFNULL(vb.outTime,0) AS isOut
+-- 	, dt.type AS deliveryType
+-- 	, c.`name` AS customerName
+-- 	, vb.empName AS vendiEmpName
+-- 	, vb.purchEmpName
+-- 	, vb.createdDate
+-- 	, vb.takeGeoTel
+-- 	, vb.customerDemand
+-- FROM erp_vendi_bil vb
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- INNER JOIN erp_delivery_type dt ON dt.id = vb.erp_delivery_type_id
+-- WHERE vb.isCheck > 0 AND vb.stockTime > 0
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_out_detail;
+-- CREATE VIEW v_vendi_out_detail AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售出仓明细
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		sd.id
+-- 	, v.id AS vid
+-- 	, v.inquiryCode AS `code`
+-- 	, IFNULL(sd.outTime,0) AS isOut
+-- 	, sd.goodsId
+-- 	, vgi.partCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, sd.qty
+-- 	, IFNULL(SUM(vbg.qty),0) AS outQty
+-- 	, IFNULL(sds.stockQty,0) AS stockQty
+-- 	, vgi.unit
+-- 	, vgi.shelfNames
+-- 	, sd.stockTime
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_vendi_bil v ON v.id = sd.erp_vendi_bil_id
+-- INNER JOIN v_goods_information vgi ON vgi.id = sd.goodsId
+-- LEFT JOIN erp_vendi_bil_goutqty vbg ON vbg.erp_sales_detail_id = sd.id
+-- LEFT JOIN v_sale_detail_stockqty sds ON sds.sid = sd.id
+-- WHERE sd.stockTime > 0
+-- GROUP BY sd.id
+-- ;
+-- -- 字段子查询
+-- SELECT
+-- 		sd.id
+-- 	, v.id AS vid
+-- 	, v.inquiryCode AS `code`
+-- 	, IFNULL(sd.outTime,0) AS isOut
+-- 	, sd.goodsId
+-- 	, vgi.partCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, sd.qty
+-- 	, (SELECT IFNULL(SUM(vbg.qty),0) FROM erp_vendi_bil_goutqty vbg WHERE vbg.erp_sales_detail_id = sd.id) AS outQty
+-- 	, (SELECT IFNULL(SUM(vbs.qty),0) FROM erp_vendi_bil_stockqty vbs WHERE vbs.erp_sales_detail_id = sd.id) AS stockQty
+-- 	, vgi.unit
+-- 	, vgi.shelfNames
+-- 	, sd.stockTime
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_sales_detail sd
+-- INNER JOIN erp_vendi_bil v ON v.id = sd.erp_vendi_bil_id
+-- INNER JOIN v_goods_information vgi ON vgi.id = sd.goodsId
+-- WHERE sd.stockTime > 0
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_back_in_bar;
+-- CREATE VIEW v_vendi_back_in_bar AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 销售退货进仓bar
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vb.id
+-- 	, vb.`code`
+-- 	, vb.inquiryCode
+-- 	, vb.isSubmit
+-- 	, IFNULL(vb.inTime,0) AS isIn
+-- 	, c.`name` AS customerName
+-- 	, vb.empName AS vendiEmpName
+-- 	, vb.createdDate
+-- FROM erp_vendi_back vb
+-- INNER JOIN autopart01_crm.erc$customer c ON c.id = vb.customerId
+-- ;
+
+-- DROP VIEW IF EXISTS v_vendi_back_in_detail;
+-- CREATE VIEW v_vendi_back_in_detail AS
+-- -- ------------------------------------------------------------------------------------------------------------------
+-- -- 销售退货进仓明细
+-- -- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		vbd.id
+-- 	, vb.id AS vbid
+-- 	, vbd.erp_sales_detail_id AS sdid
+-- 	, vb.`code`
+-- 	, vb.inquiryCode
+-- 	, IFNULL(vbd.inTime,0) AS isIn
+-- 	, vbd.goodsId
+-- 	, vgi.partCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, vbd.qty
+-- 	, IFNULL(SUM(vbi.qty), 0) AS inQty
+-- 	, vgi.unit
+-- 	, vgi.shelfNames
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_vendi_back_detail vbd
+-- INNER JOIN erp_vendi_back vb ON vb.id = vbd.erp_vendi_back_id
+-- INNER JOIN v_goods_information vgi ON vgi.id = vbd.goodsId
+-- LEFT JOIN erp_vendi_back_intoqty vbi ON vbi.erp_vendi_back_detail_id = vbd.id
+-- WHERE vb.isSubmit = 1
+-- GROUP BY vbd.id
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_back_out_bar;
+-- CREATE VIEW v_purch_back_out_bar AS
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- -- 采购退货出仓bar
+-- -- ------------------------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pb.id
+-- 	, pb.`code`
+-- 	, pb.purchCode
+-- 	, IFNULL(pb.outTime,0) AS isOut
+-- 	, s.`name` AS supplierName
+-- 	, pb.empName AS purchEmpName
+-- 	, pb.createdDate
+-- FROM erp_purch_back pb
+-- INNER JOIN autopart01_crm.erc$supplier s ON s.id = pb.supplierId
+-- WHERE pb.isCheck > 0
+-- ;
+
+-- DROP VIEW IF EXISTS v_purch_back_out_detail;
+-- CREATE VIEW v_purch_back_out_detail AS
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- -- 采购退货出仓明细
+-- -- ---------------------------------------------------------------------------------------------------------------
+-- SELECT
+-- 		pbd.id
+-- 	, pb.id AS pbid
+-- 	, pbd.erp_purch_detail_id AS pdid
+-- 	, pb.`code`
+-- 	, pb.purchCode
+-- 	, IFNULL(pbd.outTime,0) AS isOut
+-- 	, pbd.goodsId
+-- 	, vgi.partCode
+-- 	, vgi.`name` AS goodsName
+-- 	, vgi.vehicleAs
+-- 	, pbd.qty
+-- 	, IFNULL(SUM(pbg.qty),0) AS outOty
+-- 	, vgi.unit
+-- 	, vgi.shelfNames
+-- 	, vgi.spec
+-- 	, vgi.quality
+-- FROM erp_purch_back_detail pbd
+-- INNER JOIN erp_purch_back pb ON pb.id = pbd.erp_purch_back_id
+-- INNER JOIN v_goods_information vgi ON vgi.id = pbd.goodsId
+-- LEFT JOIN erp_purch_back_goutqty pbg ON pbg.erp_purch_back_detail_id = pbd.id
+-- WHERE pb.isCheck = 1
+-- GROUP BY pbd.id
+-- ;

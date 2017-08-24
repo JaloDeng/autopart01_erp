@@ -1,0 +1,33 @@
+SET FOREIGN_KEY_CHECKS =0;
+
+-- 	--------------------------------------------------------------------------------------------------------------------
+-- 	赠品管理
+-- 	--------------------------------------------------------------------------------------------------------------------
+-- DROP TABLE IF EXISTS erp_goods_gift;
+-- CREATE TABLE `erp_goods_gift` (
+--   `goodsId` bigint(20) NOT NULL COMMENT '自增编码',
+--   `min_grade` tinyint(8) DEFAULT '0' COMMENT '用户等级，0：默认，10：已认证手机，20：已上传行车证，30：已购买过配件',
+--   `description` LONGTEXT DEFAULT NULL COMMENT '简介',
+--   `price` DECIMAL(20,4) DEFAULT '0' COMMENT '价格',
+--   `shippingPrice` DECIMAL(20,4) DEFAULT '0.0' COMMENT '运费',
+-- 	`memo` VARCHAR(2000) DEFAULT NULL COMMENT '备注',
+--   PRIMARY KEY (`goodsId`),
+--   KEY `erp_goods_gift_price_idx` (`price`) USING BTREE,
+-- 	KEY `erp_goods_gift_shippingPrice_idx` (`shippingPrice`) USING BTREE,
+-- 	CONSTRAINT `fk_erp_goods_gift_goodsId` FOREIGN KEY (`goodsId`) 
+-- 		REFERENCES `erp_goods` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='配件核销单主表'
+-- ;
+
+-- DROP VIEW IF EXISTS v_goods_gift;
+-- CREATE VIEW v_goods_gift AS
+-- SELECT
+-- 		b.`name` AS goodsName
+-- 	, a.description
+-- 	,	a.price
+-- 	, a.shippingPrice
+-- 	, c.staticQty
+-- FROM erp_goods_gift a
+-- INNER JOIN erp_goods b ON b.id = a.goodsId
+-- INNER JOIN erp_goodsbook c ON c.goodsId = a.goodsId
+-- ;
