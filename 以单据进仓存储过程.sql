@@ -141,6 +141,10 @@ BEGIN
 				END IF;
 			END IF;
 	END IF;
+
+	-- 记录操作
+	INSERT INTO erp_purch_bilwfw(billId, billstatus, userId, empId, empName, userName, name)
+	SELECT pid, 'in', uid, aid, aName, aUserName, '统一进仓';
 	
 	COMMIT;
 
