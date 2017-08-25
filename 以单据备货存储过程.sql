@@ -104,6 +104,10 @@ BEGIN
 		, vb.lastModifiedId = uid, vb.lastModifiedEmpId = aid, vb.lastModifiedEmpName = aName, vb.lastModifiedBy = aUserName, vb.lastModifiedDate = NOW()
 		, sd.stockTime = NOW(), sd.lastModifiedId = uid
 	WHERE vb.id = vid;
+
+	-- 记录操作
+	INSERT INTO erp_vendi_bilwfw(billId, billstatus, userId, empId, empName, userName, name)
+	SELECT vid, 'stock', uid, aid, aName, aUserName, '统一备货';
 	
 	COMMIT;
 
