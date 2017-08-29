@@ -32,7 +32,7 @@ BEGIN
 	SELECT s.roomId INTO aRoomId FROM ers_shelfattr s WHERE s.id = sid;
 	-- 判断仓位是否存在
 	IF isnull(aRoomId) THEN
-		SET msg = concat('指定的仓位（编号：', sid,'）不存在，不能完成进仓！');
+		SET msg = concat('指定的仓位（编号：', sid,'）不存在，不能完成整单进仓！');
 		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	END IF;
 
@@ -42,19 +42,19 @@ BEGIN
 	FROM erp_purch_bil pb WHERE pb.id = pid;
 	-- 判断单据状态是否可以进仓
 	IF iTime > 0 THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单已经进仓完毕，不能完成统一进仓！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单已经进仓完毕，不能完成整单进仓！';
 	ELSEIF ISNULL(sTime) THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单没有生码，不能完成统一进仓！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单没有生码，不能完成整单进仓！';
 	ELSEIF aReceive <> 1 THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单仓库没有签收，不能完成统一进仓！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单仓库没有签收，不能完成整单进仓！';
 	ELSEIF aCheck <> 1 THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单没有审核通过，不能完成统一进仓！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单没有审核通过，不能完成整单进仓！';
 	ELSEIF ISNULL(aSupplierId) THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单没有供应商，不能完成统一进仓！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单没有供应商，不能完成整单进仓！';
 	ELSEIF EXISTS(SELECT 1 FROM erp_purch_bil_intoqty pbi WHERE pbi.erp_purch_bil_id = pid LIMIT 1) THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单已存在进仓记录，不能完成统一进仓！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单已存在进仓记录，不能完成整单进仓！';
 	ELSEIF EXISTS(SELECT 1 FROM erp_purch_detail pd INNER JOIN ers_packageattr p ON p.id = pd.ers_packageAttr_id WHERE pd.erp_purch_bil_id = pid AND p.degree > 1 LIMIT 1) THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单存在配件是多层包装，不能完成统一进仓！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '采购单存在配件是多层包装，不能完成整单进仓！';
 	END IF;
 
 	-- 写入进仓单
@@ -69,7 +69,7 @@ BEGIN
 	WHERE pd.erp_purch_bil_id = pid;
 	-- 判断是否操作成功
 	IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '统一进仓时，写入进仓单失败！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '整单进仓时，写入进仓单失败！';
 	END IF;
 	
 	-- 更新二维码表
@@ -78,7 +78,7 @@ BEGIN
 	WHERE pds.erp_purch_bil_id = pid;
 	-- 判断是否操作成功
 	IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '统一进仓时，更新二维码表状态失败！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '整单进仓时，更新二维码表状态失败！';
 	END IF;
 
 	-- 更新采购单、明细进仓信息
@@ -124,7 +124,7 @@ BEGIN
 			SET sd.isEnough = 1, sd.lastModifiedId = uid
 			WHERE pd.erp_purch_bil_id = pid AND sd.isEnough = 0;
 			IF ROW_COUNT() = 0 THEN
-				SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '入库完毕，未能成功修改相应销售明细可以出仓标志！';
+				SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '整单进仓完毕，未能成功修改相应销售明细可以出仓标志！';
 			END IF;
 	END IF;
 
@@ -137,14 +137,14 @@ BEGIN
 					SET b.isSubmit = 1, b.lastModifiedId = uid
 				WHERE p.id = pid;
 				IF ROW_COUNT() = 0 THEN
-					SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '入库完毕，未能成功修改相应销售单可以出仓标志！';
+					SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '整单进仓完毕，未能成功修改相应销售单可以出仓标志！';
 				END IF;
 			END IF;
 	END IF;
 
 	-- 记录操作
 	INSERT INTO erp_purch_bilwfw(billId, billstatus, userId, empId, empName, userName, name)
-	SELECT pid, 'in', uid, aid, aName, aUserName, '统一进仓';
+	SELECT pid, 'in', uid, aid, aName, aUserName, '整单进仓';
 	
 	COMMIT;
 

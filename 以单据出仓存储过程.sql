@@ -36,37 +36,37 @@ BEGIN
 		SET msg = concat('销售单（编号：', vid,'）已完成出仓，不能重复出仓！');
 		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF ISNULL(sTime) THEN
-		SET msg = concat('销售单（编号：', vid,'）没有完成备货，不能完成出仓！');
+		SET msg = concat('销售单（编号：', vid,'）没有完成备货，不能完成整单出仓！');
 		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF aCheck <> 1 THEN
-		SET msg = concat('销售单（编号：', vid,'）没审核通过或已归档，不能完成出仓！');
+		SET msg = concat('销售单（编号：', vid,'）没审核通过或已归档，不能完成整单出仓！');
 		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF NOT EXISTS(SELECT 1 FROM erp_purch_bil pb WHERE pb.erp_vendi_bil_id = vid) THEN
-		SET msg = concat('销售单（编号：', vid,'）直接库存销售，不能完成出仓！');
+		SET msg = concat('销售单（编号：', vid,'）直接库存销售，不能完成整单出仓！');
 		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF EXISTS(SELECT 1 FROM erp_vendi_bil_goutqty vbg WHERE vbg.erp_vendi_bil_id = vid LIMIT 1) THEN
-		SET msg = concat('销售单（编号：', vid,'）已存在出仓记录，不能完成出仓！');
+		SET msg = concat('销售单（编号：', vid,'）已存在出仓记录，不能完成整单出仓！');
 		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF EXISTS(SELECT 1 FROM erp_sales_detail sd INNER JOIN ers_packageattr p ON p.id = sd.ers_packageAttr_id WHERE sd.erp_vendi_bil_id = vid AND p.degree > 1 LIMIT 1) THEN
-		SET msg = concat('销售单（编号：', vid,'）存在配件是多层包装，不能完成出仓！');
+		SET msg = concat('销售单（编号：', vid,'）存在配件是多层包装，不能完成整单出仓！');
 		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF EXISTS(SELECT 1 FROM erp_vendi_bil vb INNER JOIN erp_purch_bil pb ON pb.erp_vendi_bil_id = vb.id
 		INNER JOIN erp_purchdetail_sncode pds ON pds.erp_purch_bil_id = pb.id AND pds.state <> 1 WHERE vb.id = vid LIMIT 1) THEN
-			SET msg = concat('销售单（编号：', vid,'）对应配件存在已出仓或未进仓情况，不能完成出仓！');
+			SET msg = concat('销售单（编号：', vid,'）对应配件存在已出仓或未进仓情况，不能完成整单出仓！');
 			SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF EXISTS(SELECT 1 FROM erp_vendi_bil vb INNER JOIN erp_purch_bil pb ON pb.erp_vendi_bil_id = vb.id
 		INNER JOIN erp_purchdetail_sncode pds ON pds.erp_purch_bil_id = pb.id AND pds.stockState <> 1 WHERE vb.id = vid LIMIT 1) THEN
-			SET msg = concat('销售单（编号：', vid,'）对应配件存在没有备货情况，不能完成出仓！');
+			SET msg = concat('销售单（编号：', vid,'）对应配件存在没有备货情况，不能完成整单出仓！');
 			SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF EXISTS(SELECT 1 FROM erp_sales_detail sd INNER JOIN erp_purch_detail pd ON pd.erp_sales_detail_id = sd.id
 		INNER JOIN erp_purchdetail_sncode pds ON pds.erp_purch_detail_id = pd.id
 		INNER JOIN erp_goods_cancel_detail gcd ON gcd.erp_purchDetail_snCode_id = pds.id WHERE sd.erp_vendi_bil_id = vid LIMIT 1) THEN
-			SET msg = concat('销售单（编号：', vid,'）对应配件存在核销记录，不能完成出仓！');
+			SET msg = concat('销售单（编号：', vid,'）对应配件存在核销记录，不能完成整单出仓！');
 			SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF EXISTS(SELECT 1 FROM erp_sales_detail sd INNER JOIN erp_purch_detail pd ON pd.erp_sales_detail_id = sd.id
 		INNER JOIN erp_purchdetail_sncode pds ON pds.erp_purch_detail_id = pd.id
 		INNER JOIN erp_vendi_bil_stockqty vbs ON vbs.erp_purchDetail_snCode_id = pds.id WHERE sd.erp_vendi_bil_id = vid LIMIT 1) THEN
-			SET msg = concat('销售单（编号：', vid,'）对应配件存在别的备货单中，不能完成出仓！');
+			SET msg = concat('销售单（编号：', vid,'）对应配件存在别的备货单中，不能完成整单出仓！');
 			SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
  	END IF;
 
@@ -82,7 +82,7 @@ BEGIN
 	WHERE sd.erp_vendi_bil_id = vid;
 	-- 判断是否操作成功
 	IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '统一出仓时，写入出仓单失败！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '整单出仓时，写入出仓单失败！';
 	END IF;
 
 	-- 更新二维码表出仓标记位
@@ -92,7 +92,7 @@ BEGIN
 	WHERE sd.erp_vendi_bil_id = vid;
 	-- 判断是否操作成功
 	IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '统一进仓时，更新二维码表状态失败！';
+		SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = '整单进仓时，更新二维码表状态失败！';
 	END IF;
 
 	-- 更新销售单、销售明细备货时间信息
@@ -137,7 +137,7 @@ BEGIN
 
 	-- 记录操作
 	INSERT INTO erp_vendi_bilwfw(billId, billstatus, userId, empId, empName, userName, name)
-	SELECT vid, 'out', uid, aid, aName, aUserName, '统一出仓';
+	SELECT vid, 'out', uid, aid, aName, aUserName, '整单出仓';
 	
 	COMMIT;
 
