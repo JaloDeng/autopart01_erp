@@ -65,7 +65,7 @@ BEGIN
 			SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
 	ELSEIF EXISTS(SELECT 1 FROM erp_sales_detail sd INNER JOIN erp_purch_detail pd ON pd.erp_sales_detail_id = sd.id
 		INNER JOIN erp_purchdetail_sncode pds ON pds.erp_purch_detail_id = pd.id
-		INNER JOIN erp_vendi_bil_stockqty vbs ON vbs.erp_purchDetail_snCode_id = pds.id WHERE sd.erp_vendi_bil_id = vid LIMIT 1) THEN
+		INNER JOIN erp_vendi_bil_stockqty vbs ON vbs.erp_purchDetail_snCode_id = pds.id AND vbs.erp_vendi_bil_id <> vid WHERE sd.erp_vendi_bil_id = vid LIMIT 1) THEN
 			SET msg = concat('销售单（编号：', vid,'）对应配件存在别的备货单中，不能完成整单出仓！');
 			SIGNAL SQLSTATE 'QZ000' SET MESSAGE_TEXT = msg;
  	END IF;
@@ -77,7 +77,7 @@ BEGIN
 	SELECT pds.id, vid, sd.id
 		, pds.goodsId, pds.ers_packageattr_id, pds.degree, pds.roomId, pds.ers_shelfattr_id, 1, pds.qty
 		, NOW(), uid, aid, aName
-	FROM erp_sales_detail sd INNER JOIN erp_purch_detail pd ON pd.erp_vendi_bil_id = sd.id
+	FROM erp_sales_detail sd INNER JOIN erp_purch_detail pd ON pd.erp_sales_detail_id = sd.id
 	INNER JOIN erp_purchdetail_sncode pds ON pds.erp_purch_detail_id = pd.id
 	WHERE sd.erp_vendi_bil_id = vid;
 	-- 判断是否操作成功
